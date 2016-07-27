@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="includes/header"></head>
+<body>
+
+	<div data-th-replace="/includes/navigation"></div>
+	<div data-th-replace="includes/scripts"></div> 
+	<div class="container" id="container"></div>	
+<!-- 	<script type="text/jsx" src="../public/js/index.jsx.js" data-th-src="@{/js/index.jsx.js}"></script> -->
+
+	<script data-th-inline="javascript" type="text/javascript">
+		var default_app = /*[[${defaultApp}]]*/ {type: "service", id: "ck"};
+	    var webHome = /*[[${webHome}]]*/ 'http://localhost:8080';
+	</script>
+
+
+	<script type="text/javascript" src="./../conso-bundle.js"></script>
+
+</body>
+</html>
