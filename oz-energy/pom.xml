@@ -94,12 +94,12 @@
 		</dependency>
  
          <!-- Ozwillo Spring Integration -->
-<!--          <dependency>
+         <dependency>
              <groupId>org.ozwillo</groupId>
              <artifactId>ozwillo-java-spring-integration</artifactId>
              <version>${ozwillo.java-spring-integration.version}</version>
          </dependency>
-	 -->
+	 
 	 
         
 		 <!-- Jackson -->

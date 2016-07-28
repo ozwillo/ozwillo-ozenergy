@@ -1,4 +1,4 @@
-package org.ozwillo.energy.global;
+package org.ozwillo.energy.my.global;
 
 
 import org.springframework.stereotype.Controller;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class GlobalController {
 
-	@RequestMapping("/global")
+	@RequestMapping("/my/global")
 	public String index(Model model) {
-		return "/global/global";
+		return "/my/global";
 	}
 }

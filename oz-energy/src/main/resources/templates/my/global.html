@@ -3,16 +3,13 @@
 <head data-th-replace="includes/header"></head>
 <body>
 
-	<div data-th-replace="|includes/${user == null ? 'navigation' : 'my-navigation'}::nav|"></div>
+	<div data-th-replace="/includes/my-navigation"></div>
 	<div data-th-replace="includes/scripts"></div> 
 	<div id="container" class="container"></div>	
 <!-- 	<script type="text/jsx" src="../public/js/index.jsx.js" data-th-src="@{/js/index.jsx.js}"></script> -->
 
-<!-- 	<script type="text/javascript">
-		$(".nav li").removeClass("active");
-		$('#about').addClass("active");
-	</script> -->
-	<script type="text/javascript" src="./../about-bundle.js"></script>
+
+	<script type="text/javascript" src="./../global-bundle.js"></script>
 
 </body>
 </html>
