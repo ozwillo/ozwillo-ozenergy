@@ -5,7 +5,6 @@ import React from 'react'
 import { render } from 'react-dom'
 import d3 from 'd3'
 
-
 import '../css/specific.css'
 
 
@@ -43,9 +42,7 @@ var DataAll = React.createClass({
 })
 */}
 
-
-
-var DataByDay = React.createClass({
+var DataTable = React.createClass({
 	getInitialState: function() {
 		return {energy: []};
 	},
@@ -62,34 +59,49 @@ var DataByDay = React.createClass({
             error: function (xhr, status, err) {
                 console.error(status, err.toString());
             }.bind(this)
-//			success: function(data) {
-//				this.setState({energy: data})
-//			}.bind(this),
 		})
 	},
 	render: function () {
 		return (
-				<div>
-					
-					<p> Extract from your data :</p>
-					<EnergyList energies={this.state.energy} />
-					
-					<div><LineChart energies={this.state.energy} /> </div>
-
-				</div>
+			<div>
+				<EnergyList energies={this.state.energy} />
+			</div> 
 		);
 	}
 })
 
+
 {/* test */}
 var EnergyList = React.createClass({
 	render: function () {
-        var energies = this.props.energies.map((energy,i) =>
+		var data = this.props.energies;
+		
+        data.forEach(function (d) {
+        	var date = new Date(d.date);
+        	var year = date.getFullYear();
+        	var month = date.getMonth() + 1;
+        	var day = date.getDate();
+        	if (month < 10) {
+        		if(day<10) {
+        			d.Date = year + "-0" + month + "-0" + day;
+        		} else {
+        			d.Date = year + "-0" + month + "-" + day;
+        		}
+        	} else {
+        		if (day<10) {
+        			d.Date = year + "-" + month + "-0" + day;
+        		} else {
+        			d.Date = year + "-" + month + "-" + day;
+        		}
+        	}
+        });
+        
+        var energies = data.map((energy,i) =>
             <Energy key={i} energy={energy}/>
         );
         
         return (
-            <table>
+            <table className="data">
             	<thead>
 	                <tr>
 	                    <th>Date </th>
@@ -110,44 +122,12 @@ var Energy = React.createClass({
 	render: function () {
 		return (
 			<tr>
-				<td>{this.props.energy.date} </td>
-				<td>{this.props.energy.consumption}</td>
+				<td>{this.props.energy.Date} </td>
+				<td>{this.props.energy.consumption.toString().slice(0,7)}</td>
 			</tr>
 		);
 	}
 })
-
-//var resizeMixin={
-//	    componentWillMount:function(){
-//
-//	        var _self=this;
-//
-//	        $(window).on('resize', function(e) {
-//	            _self.updateSize();
-//	        });
-//
-//	        this.setState({width:this.props.width});
-//
-//	    },
-//	    componentDidMount: function() {
-//	        this.updateSize();
-//	    },
-//	    componentWillUnmount:function(){
-//	        $(window).off('resize');
-//	    },
-//
-//	    updateSize:function(){
-//	        var node = ReactDOM.findDOMNode(this);
-//	        var parentWidth=$(node).width();
-//
-//	        if(parentWidth<this.props.width){
-//	            this.setState({width:parentWidth-20});
-//	        }else{
-//	            this.setState({width:this.props.width});
-//	        }
-//	    }
-//	};
-
 
 var Axis=React.createClass({
     propTypes: {
@@ -161,7 +141,18 @@ var Axis=React.createClass({
     componentDidMount: function () { this.renderAxis(); },
     renderAxis: function () {
         var node = ReactDOM.findDOMNode(this);
-        d3.select(node).call(this.props.axis);
+        if (this.props.axisType=='x') {
+        	d3.select(node).call(this.props.axis)
+        		.selectAll("text")
+        			.style("text-anchor", "end")
+        			.attr("dx", "-.8em")
+        			.attr("dy", ".15em")
+        			.attr("transform", function(d) {
+        				return "rotate(-65)" 
+                });	
+        } else {
+            d3.select(node).call(this.props.axis);     	
+        }
 
     },
     render: function () {
@@ -201,58 +192,6 @@ var Grid=React.createClass({
 });
 
 
-//var ToolTip=React.createClass({
-//    propTypes: {
-//        tooltip:React.PropTypes.object
-//    },
-//    render:function(){
-//
-//        var visibility="hidden";
-//        var transform="";
-//        var x=0;
-//        var y=0;
-//        var width=150,height=70;
-//        var transformText='translate('+width/2+','+(height/2-5)+')';
-//        var transformArrow="";
-//
-//        if(this.props.tooltip.display==true){
-//            var position = this.props.tooltip.pos;
-//
-//            x= position.x;
-//            y= position.y;
-//            visibility="visible";
-//
-//            //console.log(x,y);
-//
-//            if(y>height){
-//                transform='translate(' + (x-width/2) + ',' + (y-height-20) + ')';
-//                transformArrow='translate('+(width/2-20)+','+(height-2)+')';
-//            }else if(y<height){
-//
-//                transform='translate(' + (x-width/2) + ',' + (Math.round(y)+20) + ')';
-//                transformArrow='translate('+(width/2-20)+','+0+') rotate(180,20,0)';
-//            }
-//
-//
-//
-//        }else{
-//            visibility="hidden"
-//        }
-//
-//        return (
-//            <g transform={transform}>
-//                <rect class="shadow" is width={width} height={height} rx="5" ry="5" visibility={visibility} fill="#6391da" opacity=".9"/>
-//                <polygon class="shadow" is points="10,0  30,0  20,10" transform={transformArrow}
-//                         fill="#6391da" opacity=".9" visibility={visibility}/>
-//                <text is visibility={visibility} transform={transformText}>
-//                    <tspan is x="0" text-anchor="middle" font-size="15px" fill="#ffffff">{this.props.tooltip.data.key}</tspan>
-//                    <tspan is x="0" text-anchor="middle" dy="25" font-size="20px" fill="#a9f3ff">{this.props.tooltip.data.value+" kWh"}</tspan>
-//                </text>
-//            </g>
-//        );
-//    }
-//});
-
 var Dots=React.createClass({
     propTypes: {
         data:React.PropTypes.array,
@@ -271,7 +210,7 @@ var Dots=React.createClass({
         var circles=data.map(function(d,i){
 
             return (<circle className="dot" r="7" cx={_self.props.x(d.Date)} 
-					cy= {_self.props.y(d.consumption)} fill="#000080"
+					cy= {_self.props.y(d.consumption)} fill="#000000"
 					stroke="#ffffff" strokeWidth="5px" key={i} 
 		            data-key={d3.time.format("%Y-%m-%d")(d.Date)} data-value={d.consumption}/>);
         });
@@ -291,8 +230,6 @@ var LineChart=React.createClass({
         height:React.PropTypes.number,
         chartId:React.PropTypes.string,
     },
-
-    //mixins:[resizeMixin],
     
     getDefaultProps: function() {
         return {
@@ -303,20 +240,64 @@ var LineChart=React.createClass({
     },
     getInitialState:function(){
         return {
+        	energy: [],
         	width:this.props.width
         };
     },
     
+    componentWillMount:function(){
+        var _self=this;
+        $(window).on('resize', function(e) {
+            _self.updateSize();
+        });
+        this.setState({width:this.props.width});
+
+    },
+	componentDidMount: function() {
+		this.updateSize();
+		this.updateData();
+	},
+	
+    componentWillUnmount:function(){
+    	$(window).off('resize');
+    	this.updateData();
+    },
+
+	updateSize:function(){
+	    var node = ReactDOM.findDOMNode(this);
+	    var parentWidth=$(node).width();
+	
+	    if(parentWidth<this.props.width){
+	        this.setState({width:parentWidth-20});
+	    }else{
+	        this.setState({width:this.props.width});
+	    }
+	    this.updateData();
+	},
+	
+	updateData: function() {
+		$.ajax({
+			url: "/api/my/conso/" + ck_tmp + "/day",
+			type: 'get',
+			dataType: 'json',
+			success: function (data) {
+	            var state = this.state;
+	            state.energy = data;
+	            this.setState(state);
+	        }.bind(this),
+	        error: function (xhr, status, err) {
+	            console.error(status, err.toString());
+	        }.bind(this)
+		})
+	},
+    
     render:function(){
 		
-		var data = this.props.energies;
-		
-        var margin = {top: 5, right: 50, bottom: 20, left: 50},
+		var data = this.state.energy;
+        var margin = {top: 5, right: 50, bottom: 90, left: 50},
             w = this.state.width - (margin.left + margin.right),
             h = this.props.height - (margin.top + margin.bottom);
 
-//        var parseDate = d3.time.format("%Y-%m-%d").parse;
-//        var strictIsoParse = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ").parse;
         var i = 0;
         data.forEach(function (d) {
         	i++;
@@ -350,8 +331,9 @@ var LineChart=React.createClass({
 	            if(i>0)
 	                return d.Date;
 	        }).splice(1))
-	        .ticks(4);
-	
+	        .ticks(4)
+	        .tickFormat(d3.time.format("%Y-%m-%d")); 
+	   
 	    var yGrid = d3.svg.axis()
 	        .scale(y)
 	        .orient('left')
@@ -379,43 +361,111 @@ var LineChart=React.createClass({
 	                    <Axis h={h} axis={yAxis} axisType="y" />
 	                    <Axis h={h} axis={xAxis} axisType="x"/>
                         <path className="line shadow" d={line(data)} strokeLinecap="round"/>
-	                    <Dots data={data} x={x} y={y} />
+	                    <Dots data={data} x={x} y={y}/>
                     </g>
                 </svg>
             </div>
         );
-    },
-//    showToolTip:function(e){
-//        e.target.setAttribute('fill', '#A9A9A9');
-//
-//        this.setState({tooltip:{
-//            display:true,
-//            data: {
-//                key:e.target.getAttribute('data-key'),
-//                value:e.target.getAttribute('data-value')
-//                },
-//            pos:{
-//                x:e.target.getAttribute('cx'),
-//                y:e.target.getAttribute('cy')
-//            }
-//
-//            }
-//        });
-//    },
-//    hideToolTip:function(e){
-//        e.target.setAttribute('fill', '#000080');
-//        this.setState({tooltip:{ display:false,data:{key:'',value:''}}});
-//    }
+    }
 });
+
+var Today = React.createClass({
+	render: function(){
+		var d = new Date();
+		var date = d.toDateString();
+		var time = d.toTimeString();
+		return(
+			<div>
+				<p>We are {date}.</p>
+				<p>It is {time.slice(0,8)}.</p>
+			</div>
+		);
+	}
+
+})
 
 
 var App = React.createClass({
   	render: function(){
   		return (
   			<div>
-  				<p> individual energy's consumption </p>
-  			
-  				<DataByDay />
+
+				<div className="row">
+				
+						
+					<div className="col-sm-4 col-sm-push-8" >
+						<div className="panel panel-success">
+							<div className="panel-heading">
+								<h3 className="panel-title">Welcome ! </h3>
+							</div>
+							<div className="panel-body">
+								<Today />
+							</div>
+						</div>
+					
+						<div className="panel panel-success">
+							<div className="panel-heading">
+								<h3 className="panel-title"> TODO : Overview </h3>
+							</div>
+							<div className="panel-body">
+								<div className="text">
+									Here you will see whether or not your consumption goes up, and in which proportions.
+								</div>
+							</div>
+						</div>
+					</div>
+						
+						
+					<div className="col-sm-8 col-sm-pull-4" >
+						<div className="panel panel-success">
+				            <div className="panel-heading">
+				              	<h3 className="panel-title">Individual energy's consumption </h3>
+				            </div>
+				            <div className="panel-body">
+								<LineChart />
+				            </div>
+			            </div>
+  					</div>
+  				
+
+				</div>
+  				
+				
+				<div className="row">
+				
+					<div className="col-sm-6 col-sm-push-6" >
+						<div className="panel panel-success">
+							<div className="panel-heading">
+								<h3 className="panel-title">TODO : Consumption's indicators</h3>
+							</div>
+							<div className="panel-body">
+								<div className="text">
+									Here you will see your :
+									<ul>
+										<li>average consumption of the month</li>
+										<li>total consumption of the month</li>
+										<li>max total consumption for days/months/year</li>
+										<li>...</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+					<div className="col-sm-6 col-sm-pull-6" >
+						<div className="panel panel-success">
+				            <div className="panel-heading">
+				              	<h3 className="panel-title">Your data</h3>
+				            </div>
+				            <div className="panel-body">
+								<DataTable />
+				            </div>
+				          </div>
+					</div>
+				
+					
+				</div>
+			
   			</div>
   		);
   	}

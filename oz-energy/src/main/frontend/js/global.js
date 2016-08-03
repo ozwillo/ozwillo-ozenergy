@@ -4,6 +4,8 @@
 import React from 'react'
 import { render } from 'react-dom'
 
+import '../css/specific.css'
+
 $(".nav li").removeClass("active");
 $('#global').addClass("active");
 
