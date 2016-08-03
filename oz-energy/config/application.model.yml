@@ -13,7 +13,9 @@ application:
   url: http://localhost:8080
   security:
     fetchUserInfo: true
-  
+    noauthdevmode: true
+  devmode: true
+   
 kernel:
   base_uri: https://kernel.ozwillo-preprod.eu
   alt_uri: ${kernel.base_uri}
