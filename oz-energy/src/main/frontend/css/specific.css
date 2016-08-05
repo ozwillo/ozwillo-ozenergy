@@ -9,12 +9,18 @@
     font-weight: bold;
     line-height: 1.42857143 !important;
     letter-spacing: 4px;
-    border-radius: 0;
+    border-radius: 3px;
 }
 
 
 .navbar-inverse .navbar-brand {
     color: #4e9a06;
+}
+
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-brand:focus {
+  color: #4e9a06;
+  background-color: transparent;
 }
 
 /* General */
@@ -108,7 +114,7 @@ body {
 /* Redefine panels and panel-success from Bootstrap */
 .panel{
 	background-color: #ffffff;
-	border-radius: 8px;
+	border-radius: 4px;
 }
 
 .panel-body {
@@ -125,8 +131,8 @@ body {
 }
 
 .panel-heading {
-  border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
 } 
 
 .panel-success {
