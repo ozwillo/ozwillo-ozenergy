@@ -101,6 +101,7 @@ var EnergyList = React.createClass({
         );
         
         return (
+        		<div className="table-responsive">
             <table className="data">
             	<thead>
 	                <tr>
@@ -112,6 +113,7 @@ var EnergyList = React.createClass({
                 	{energies}
                 </tbody>
             </table>
+            </div>
         )
     }
 })
@@ -384,9 +386,118 @@ var Today = React.createClass({
 
 })
 
+var YourConsumption = React.createClass({
+	getInitialState: function()  {
+		return {
+			type: "One-Week period",
+			agg: "Average"
+		}
+	},
+	handleChange: function(e) {
+		this.setState({type: e.target.id});
+	},
+	handleAggregation: function(e) {
+		this.setState({agg: e.target.id});
+	},
+
+	render: function() {
+		return (
+			<div>
+				<table className="yourdata">
+					<tbody>
+					<tr>
+						<td>Individual energy's consumption</td>
+						<td>
+							<div className="dropdown">
+							  <button className="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    {this.state.agg} 
+							    <span className="caret"></span>
+							  </button>
+							  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+							    <li ><a id="Average" href="#" onClick={this.handleAggregation}>Average</a></li>
+							    <li><a id="Cumulated" href="#" onClick={this.handleAggregation}>Cumulated</a></li>
+							  </ul>
+							</div>
+						</td>
+						<td>
+							<div className="dropdown">
+							  <button className="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    {this.state.type} 
+							    <span className="caret"></span>
+							  </button>
+							  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+							    <li><a id="One-week period" href="#" onClick={this.handleChange}>One-Week period</a></li>
+							    <li><a id="One-Month period" href="#" onClick={this.handleChange}>One-Month period</a></li>
+							    <li><a id="One-Year period" href="#" onClick={this.handleChange}>One-Year period</a></li>
+							  </ul>
+							</div>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		);
+	}
+})
+
+
+var YourData = React.createClass({
+	getInitialState: function()  {
+		return {
+			type: "Day",
+			agg: "Average"
+		}
+	},
+	handleChange: function(e) {
+		this.setState({type: e.target.id});
+	},
+	handleAggregation: function(e) {
+		this.setState({agg: e.target.id});
+	},
+
+	render: function() {
+		return (
+			<div>
+				<table className="yourdata">
+					<tbody>
+					<tr>
+						<td>Your Data</td>
+						<td>
+							<div className="dropdown">
+							  <button className="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    {this.state.agg} 
+							    <span className="caret"></span>
+							  </button>
+							  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+							    <li ><a id="Average" href="#" onClick={this.handleAggregation}>Average</a></li>
+							    <li><a id="Cumulated" href="#" onClick={this.handleAggregation}>Cumulated</a></li>
+							  </ul>
+							</div>
+						</td>
+						<td>
+							<div className="dropdown">
+							  <button className="btn btn-success dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    {this.state.type} 
+							    <span className="caret"></span>
+							  </button>
+							  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+							    <li ><a id="Day" href="#" onClick={this.handleChange}>Day</a></li>
+							    <li><a id="Week" href="#" onClick={this.handleChange}>Week</a></li>
+							    <li><a id="Month" href="#" onClick={this.handleChange}>Month</a></li>
+							    <li><a id="Year" href="#" onClick={this.handleChange}>Year</a></li>
+							  </ul>
+							</div>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		);
+	}
+})
 
 var App = React.createClass({
-  	render: function(){
+  	render: function() {
   		return (
   			<div>
 
@@ -419,7 +530,7 @@ var App = React.createClass({
 					<div className="col-sm-8 col-sm-pull-4" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title">Individual energy's consumption </h3>
+				              	<h3 className="panel-title"><YourConsumption/></h3>
 				            </div>
 				            <div className="panel-body">
 								<LineChart />
@@ -455,7 +566,7 @@ var App = React.createClass({
 					<div className="col-sm-6 col-sm-pull-6" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title">Your data</h3>
+				              	<h3 className="panel-title"><YourData /></h3>
 				            </div>
 				            <div className="panel-body">
 								<DataTable />
