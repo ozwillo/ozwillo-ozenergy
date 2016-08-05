@@ -7,7 +7,7 @@ module.exports = {
     	
             {
             	index : "./js/index.js",
-            	conso: "./js/conso.js",
+            	conso: "./js/my-conso/conso.js",
             	global: "./js/global.js",
             	about: "./js/about.js"
             }
