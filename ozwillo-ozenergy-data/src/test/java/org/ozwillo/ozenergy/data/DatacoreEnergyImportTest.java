@@ -1,25 +1,22 @@
 package org.ozwillo.ozenergy.data;
 
-import java.io.File;
+import static org.ozwillo.ozenergy.data.EnergyMapperHelper.*;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oasis.datacore.common.context.SimpleRequestContextProvider;
@@ -29,7 +26,6 @@ import org.oasis.datacore.core.meta.pov.DCProject;
 import org.oasis.datacore.core.security.mock.LocalAuthenticationService;
 import org.oasis.datacore.rest.api.DCResource;
 import org.oasis.datacore.rest.api.DatacoreApi;
-import org.oasis.datacore.rest.api.util.UnitTestHelper;
 import org.oasis.datacore.rest.client.DatacoreCachedClient;
 import org.oasis.datacore.rest.client.cxf.mock.AuthenticationHelper;
 import org.oasis.datacore.rest.server.DatacoreApiImpl;
@@ -49,7 +45,10 @@ import au.com.bytecode.opencsv.CSVReader;
 
 
 /**
- * Injects enercontr data
+ * Injects energy data :
+ * TODO
+ * 
+ * Requires model to have been already imported (ex. using the Playground Import tool) 
  * 
  * @author mdutoo
  *
@@ -57,7 +56,7 @@ import au.com.bytecode.opencsv.CSVReader;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING) // else random since java 7 NOT REQUIRED ANYMORE
-public class DatacoreEnergyTest {
+public class DatacoreEnergyImportTest {
    
    @Autowired
    @Qualifier("datacoreApiCachedJsonClient")
@@ -101,16 +100,6 @@ public class DatacoreEnergyTest {
    @Autowired
    private LdpEntityQueryServiceImpl ldpEntityQueryServiceImpl;
    
-   
-   @Before
-   public void reset() {
-      
-   }
-   
-   
-   public interface IndexedFieldSetMapper<T> {
-      public List<T> map(String[] indexedFieldSet);
-   } 
 
 
    @Test
@@ -125,15 +114,13 @@ public class DatacoreEnergyTest {
       if (serverRatherThanClient) {
          authenticationService.loginAs("admin"); // works only on server-side (on client side, also requires Bearer/Basic credentials)  
          datacoreApi = datacoreApiImpl;
+         
       } else {
          AuthenticationHelper.loginBasicAsAdmin(); // works only on client side in devmode 
          datacoreApi = datacoreApiClient;
       }
-      /*importCsv(new IndexedFieldSetMapper<DCResource>() {
-         public List<DCResource> map(String[] indexedFieldSet) {
-            return null;
-         }
-      });*/
+      CsvResourceBulkImportService csvImportService = new CsvResourceBulkImportService();
+      csvImportService.setDatacoreApi(datacoreApi);
 
       // providers :
       //String csvResourcePath = "energy/energy_providers.csv";
@@ -141,8 +128,8 @@ public class DatacoreEnergyTest {
       
       // consumers (persid) :
       // TODO LATER login as each consumer user (provided in csv) and batch = 1 to setup permissions
-      importCsv("energy/energy_consumers.csv", 1000000, true,
-            "org_1", datacoreApi, line -> {
+      csvImportService.importCsv("energy/energy_consumers.csv", 1000000, true,
+            "org_1", line -> {
          String countryId = line[12]; // geocofr:idIso
          String cityId = countryId + '/' + line[13] + '/' + line[14]; // geon3fr:idIso  geocifr:name
          String consumerId = hashCodeId(line[4]);
@@ -175,8 +162,8 @@ public class DatacoreEnergyTest {
       // TODO LATER login as each consumer user (provided in csv) and batch = 1 to setup permissions
       final Map<String,String> customerKeyToContractId = new HashMap<String,String>();
       //importCsv("energy/energy_consumers.csv", 1000000, true,
-      importCsv("energy/energy_contracts.csv", 1000000, true,
-            DCProject.OASIS_SANBOX, datacoreApi, line -> {
+      csvImportService.importCsv("energy/energy_contracts.csv", 1000000, true,
+            DCProject.OASIS_SANBOX, line -> {
          // energy_contracts.csv fields :
          // orgfr:siret geocofr:idIso  persid:email   enercontr:displayName   enercontr:customerKey
          String providerId = line[1] + '/' + line[0];
@@ -203,8 +190,8 @@ public class DatacoreEnergyTest {
       //String consumptionsCsvPath = "/home/mdutoo/dev/oasis/workspace/ozwillo-ozenergy/energy-ok-import-datacore.csv";
       String consumptionsCsvPath = "energy/energy-ok-import-datacore.csv";
       final List<String> customerKeysWithoutContract = new ArrayList<String>();
-      importCsv(consumptionsCsvPath, 1000000, false,
-            DCProject.OASIS_SANBOX, datacoreApi, line -> {
+      csvImportService.importCsv(consumptionsCsvPath, 1000000, false,
+            DCProject.OASIS_SANBOX, line -> {
          String customerKey = line[0];
          String contractId = customerKeyToContractId.get(customerKey); // "FR/49015839100014/964549036";
          if (contractId == null) {
@@ -226,137 +213,6 @@ public class DatacoreEnergyTest {
       System.out.println("serverRatherThanClient=" + serverRatherThanClient);
    }
    
-
-   private Number parseNumber(String numberString) {
-      try {
-         return Double.parseDouble(numberString);
-      } catch (NumberFormatException e) {
-         // ex. on "0"
-         return Long.parseLong(numberString);
-      }
-   }
-
-
-   public String hashCodeId(String s) {
-      return hashCode(s) + "";
-   }
-   public int hashCode(String s) {
-      int hash = 0;
-      int len = s.length();
-      if (len == 0) return hash;
-      for (int i = 0; i < len; i++) {
-         char chr   = s.charAt(i);
-         hash  = ((hash << 5) - hash) + chr;
-         hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-   }
-
-   public void importCsv(String csvFileOrClassPath, int maxLineNb, boolean checkIfExists,
-         String project, DatacoreApi datacoreApi,
-         Function<String[], ? extends DCResource[]> indexedFieldSetResourceMapper) throws Exception {
-      if (project == null) {
-         project = DCProject.OASIS_SANBOX;
-      }
-      SimpleRequestContextProvider.setSimpleRequestContext(new ImmutableMap.Builder<String, Object>()
-            .put(DatacoreApi.PROJECT_HEADER, project).build());
-      
-      InputStream csvIn = getClass().getClassLoader().getResourceAsStream(csvFileOrClassPath);
-      if (csvIn == null) { // in case of classpath resource only
-         //throw new RuntimeException("Unable to find in classpath CSV resource");
-         File csvFile = new File(csvFileOrClassPath);
-         if (!csvFile.canRead()) {
-            throw new RuntimeException("Unable to find/read in classpath or file CSV resource " + csvFileOrClassPath);
-         }
-         csvIn = new FileInputStream(csvFile);
-      }
-      
-      long startTime = System.currentTimeMillis();
-      int resourceBatchSize = 1000;
-      
-      CSVReader csvReader = null;
-      try  {
-         csvReader = new CSVReader(new InputStreamReader(csvIn), ',');
-         String [] line;
-         csvReader.readNext(); // skip header TODO parse & map it
-         int resourceNb = 0;
-         int ln;
-         List<DCResource> resourcesToPost = new ArrayList<DCResource>(150);
-         for (ln = 0; (line = csvReader.readNext()) != null && ln < maxLineNb; ln++) {
-            // schedule post :
-            DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);
-            if (mappedResources == null || mappedResources.length == 0) {
-               continue;
-            }
-            resourcesToPost.addAll(Arrays.asList(mappedResources));
-            
-            //if ((ln + 1) % lineBatchSize == 0) {
-            if (checkIfExists) { // prevents batch
-               for (DCResource r : mappedResources) {
-                  try {
-                     datacoreApi.getData(r.getModelType(), r.getId(), null);
-                  } catch (NotFoundException rnfex) {
-                     //datacoreApiClient.postDataInType(r);
-                     try {
-                        datacoreApi.postAllDataInType(Arrays.asList(new DCResource[]{ r }), r.getModelType());
-                     } catch (WebApplicationException e) {
-                        if (e.getResponse().getStatus() / 100 == 2) {} else throw e;
-                     }
-                     resourceNb++;
-                  } catch (WebApplicationException e) {
-                     if (e.getResponse().getStatus() / 100 == 2) {} else throw e;
-                  } // else don't repost it if already there (empty db for that)
-               }
-               
-            } else if (resourcesToPost.size() >= resourceBatchSize) {
-               // ASSUMING THERE ARE NONE YET (else requires getData which forbids batch) TODO test it
-               try {
-                  datacoreApi.postAllData(resourcesToPost);
-               } catch (WebApplicationException e) {
-                  if (e.getResponse().getStatus() / 100 == 2) {} else throw e;
-               }
-               resourceNb += resourcesToPost.size();
-               resourcesToPost.clear();
-            }
-            
-            // TODO LATER could catch around each line to allow importing other ones, and return all errors
-         }
-         
-         // post batch remainder :
-         if (!checkIfExists && !resourcesToPost.isEmpty()) {
-            try {
-               // ASSUMING THERE ARE NONE YET (else requires getData which forbids batch) TODO test it
-               datacoreApi.postAllData(resourcesToPost);
-            } catch (WebApplicationException e) {
-               if (e.getResponse().getStatus() / 100 == 2) {} else throw e;
-            }
-            resourceNb += resourcesToPost.size();
-         }
-
-         long endTime = System.currentTimeMillis();
-         System.out.println("Took " + (endTime - startTime) + " ms to upload "
-               + resourceNb + " resources out of " + ln + " lines from CSV file " + csvFileOrClassPath);
-
-      } catch (WebApplicationException waex) {
-         Response r = waex.getResponse();
-         String errMsg = UnitTestHelper.readBodyAsString(waex);
-         throw new RuntimeException("HTTP " + r.getStatus()
-               + " web app error reading classpath CSV resource " + csvFileOrClassPath
-               + " :\n" + r.getStringHeaders() + "\n" + errMsg + "\n\n", waex);
-         
-      /*} catch (Exception ex) {
-         throw new RuntimeException("Error reading classpath CSV resource " + csvResourcePath, ex);*/
-       
-      } finally {
-         try {
-            csvReader.close();
-         } catch (IOException e) {
-           // TODO log
-         }
-      }
-
-   }
-
    
    ///@Test
    public void testDraft() throws Exception {
