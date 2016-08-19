@@ -108,7 +108,7 @@ public class DatacoreEnergyImportTest {
       // geo_1 (with addrpostci:name), org_1 (with providers)
       // as well as models of : org_1.persid:, oasis.sandbox.ener*
       
-      boolean serverRatherThanClient = false;
+      boolean serverRatherThanClient = true;
       
       DatacoreApi datacoreApi;
       if (serverRatherThanClient) {
