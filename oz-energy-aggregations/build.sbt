@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 import sbtassembly.AssemblyPlugin.autoImport._
 
-name := "average-by-day-and-customer-key"
+name := "oz-energy-aggregations"
 
 version := "1.0"
 

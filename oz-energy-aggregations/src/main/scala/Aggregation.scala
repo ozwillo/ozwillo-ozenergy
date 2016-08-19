@@ -14,15 +14,15 @@ import java.time.ZoneId
 import java.time.LocalDate
 import java.time.LocalTime
 
-object AvgByDayAndCK {
+object Aggregation {
 	def main(args: Array[String]) {
 	
 	val inputUri: String = args.headOption.getOrElse("mongodb://127.0.0.1/datacore.oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred")
 	val outputUri: String = args.headOption.getOrElse("mongodb://127.0.0.1/datacore1.avgDayAndCK")
 	
 	val conf = new SparkConf()
-		.setAppName("AvgByDayAndCK")
-		.set("spark.app.id", "AvgByDayAndCK")
+		.setAppName("Aggregation")
+		.set("spark.app.id", "Aggregation")
 		.set("spark.mongodb.input.uri", inputUri)
 		.set("spark.mongodb.output.uri", outputUri)
 	
