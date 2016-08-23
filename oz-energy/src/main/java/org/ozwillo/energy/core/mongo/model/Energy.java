@@ -1,36 +1,28 @@
 package org.ozwillo.energy.core.mongo.model;
 
 import org.joda.time.DateTime;
-
-//import java.util.Date;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
-
-@Document(collection = "energy")
 public class Energy {
-
+	
 	@Id
 	private String id;
 	
-	@Field("CUSTOMER_KEY")
+	@Field("contract")
 	@JsonProperty
-	private int customerKey;
+	private String contract;
 	
-	@Field("Date")
+	@Field("date")
 	@JsonProperty
 	@DateTimeFormat(iso=ISO.DATE_TIME)
-	//private Date date;
 	private DateTime date;
 	
-	@Field("General_Supply_KWH")
+	@Field("globalKW")
 	@JsonProperty
 	private double consumption;
 	
@@ -38,21 +30,6 @@ public class Energy {
 	private int month;
 	private int day;
 	
-	
-//	private List<String> modelType;
-//
-//	@JsonProperty
-//	private List<String> ancestors;
-//
-//	private List<String> nameTokens;
-//
-//	@JsonProperty
-//	private String country;
-//
-//	/** URI in Datacore  */
-//	@JsonProperty
-//	private String uri;
-
 	public void setDateByYMD(){
 		this.date = new DateTime(this.year, this.month, this.day, 0, 0);
 	}
@@ -89,22 +66,14 @@ public class Energy {
 		this.id = id;
 	}
 
-	public int getCustomerKey() {
-		return customerKey;
+	public String getContract() {
+		return contract;
 	}
 
-	public void setCustomerKey(int customerKey) {
-		this.customerKey = customerKey;
+	public void setContract(String contract) {
+		this.contract = contract;
 	}
 
-//	public Date getDate() {
-//		return date;
-//	}
-//
-//	public void setDate(Date date) {
-//		this.date = date;
-//	}
-	
 	public DateTime getDate() {
 		return date;
 	}
@@ -121,46 +90,4 @@ public class Energy {
 		this.consumption = consumption;
 	}
 
-//	public List<String> getModelType() {
-//		return modelType;
-//	}
-//
-//	public void setModelType(List<String> modelType) {
-//		this.modelType = modelType;
-//	}
-//
-//	public List<String> getAncestors() {
-//		return ancestors;
-//	}
-//
-//	public void setAncestors(List<String> ancestors) {
-//		this.ancestors = ancestors;
-//	}
-//
-//	public List<String> getNameTokens() {
-//		return nameTokens;
-//	}
-//
-//	public void setNameTokens(List<String> nameTokens) {
-//		this.nameTokens = nameTokens;
-//	}
-//
-//	public String getCountry() {
-//		return country;
-//	}
-//
-//	public void setCountry(String country) {
-//		this.country = country;
-//	}
-//
-//	public String getUri() {
-//		return uri;
-//	}
-//
-//	public void setUri(String uri) {
-//		this.uri = uri;
-//	}
-	
-	
-	
 }

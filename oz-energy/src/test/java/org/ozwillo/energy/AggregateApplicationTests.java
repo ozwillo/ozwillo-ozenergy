@@ -21,15 +21,30 @@ public class AggregateApplicationTests {
 	public void contextLoads() {
 	}
 	
-	@Test
-	public void aggregateByDayTest(){
-		int ck = 8170837;
-		List<Energy> energy= repository.aggregateByDay(ck);
+	public void displayResults(String collectionName, List<Energy> energy, String unit) {
+		System.out.println("-----------------------------------------------------");
+		System.out.println("Total number of data for " + collectionName + " : " + energy.size());
+		System.out.println("Extract (10 first) :");
 		List <Energy> tenFirst = energy.subList(0, 10);
-		for(Energy en : tenFirst){
-			System.out.println(en.getId() + " - "+ en.getDate() + " - " + en.getConsumption());
+		for(Energy en: tenFirst) {
+			System.out.println(en.getContract() + " - " + en.getDate() + " : " + en.getConsumption() + "(" + unit +")");
 		}
+		System.out.println("-----------------------------------------------------");
+	}
+	
+	@Test
+	public void findByContractTest() {
+		String contract = "http://data.ozwillo.com/dc/type/"
+				+ "enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
+		List<Energy> energy = repository.findByContract(contract, "avgDayAndCK");
+		displayResults("avgDayAndCK", energy, "kWh");
 		
+	}
+	
+	@Test
+	public void findByCityTest() {
+		List<Energy> energy = repository.findByCity("Lyon", "avgDay");
+		displayResults("avgDayForLyon", energy, "kWh");
 	}
 
 }

@@ -24,7 +24,7 @@ public class EnergyAggregationServices {
 	
 	@Autowired
 	@PostConstruct
-	@Scheduled(cron="0 0 0 1/1 * ? *") //Runs at midnight every day every month
+	@Scheduled(cron="0 0 0 1/1 * ? *") // Runs at midnight every day every month
 	public void runAggregation() throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));

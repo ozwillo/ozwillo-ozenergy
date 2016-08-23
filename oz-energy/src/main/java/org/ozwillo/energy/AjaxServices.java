@@ -18,18 +18,18 @@ public class AjaxServices {
 	@Autowired
 	private EnergyRepository repository;
 
-	@RequestMapping(value="/{ck}", method = RequestMethod.GET)
-	public List<Energy> findConsumerData(@PathVariable int ck) {
-		List<Energy> energy = repository.findByCustomerKey(ck);
-		List<Energy> tenFirst = energy.subList(0, 10);
- 		return tenFirst;
-	}
-	
-	@RequestMapping(value="/{ck}/day", method = RequestMethod.GET)
-	public List<Energy> aggregateConsumerDataByDay(@PathVariable int ck) {
-		List<Energy> energy= repository.aggregateByDay(ck);
-		List <Energy> tenFirst = energy.subList(0, 10);
-		return tenFirst;
-	}
+//	@RequestMapping(value="/{ck}", method = RequestMethod.GET)
+//	public List<Energy> findConsumerData(@PathVariable int ck) {
+//		List<Energy> energy = repository.findByCustomerKey(ck);
+//		List<Energy> tenFirst = energy.subList(0, 10);
+// 		return tenFirst;
+//	}
+//	
+//	@RequestMapping(value="/{ck}/day", method = RequestMethod.GET)
+//	public List<Energy> aggregateConsumerDataByDay(@PathVariable int ck) {
+//		List<Energy> energy= repository.aggregateByDay(ck);
+//		List <Energy> tenFirst = energy.subList(0, 10);
+//		return tenFirst;
+//	}
 
 }

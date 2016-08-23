@@ -1,16 +1,14 @@
 package org.ozwillo.energy.mongo.dao;
 
 import org.ozwillo.energy.core.mongo.model.Energy;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.query.Criteria;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
@@ -24,30 +22,17 @@ public class EnergyRepositoryImpl implements EnergyRepositoryCustom {
 	}
 
 	@Override
-	public List<Energy> aggregateByDay(int customerKey) {
+	public List<Energy> findByContract(String contract, String collectionName) {
+		Query query = new Query().addCriteria(Criteria.where("contract").is(contract))
+				.with(new Sort(new Order(Direction.ASC, "date")));
+		return mongoTemplate.find(query, Energy.class, collectionName);
+	}
+	
+	@Override
+	public List<Energy> findByCity(String city, String aggregation) {
+		String collectionName = aggregation + "For" + city;
 		
-		MatchOperation match = match(Criteria.where("customerKey").is(customerKey));
-		ProjectionOperation project = project()
-				.andExpression("dayOfMonth(date)").as("day")
-				.andExpression("month(date)").as("month")
-				.andExpression("year(date)").as("year")
-				.andExpression("consumption").as("conso");
-		GroupOperation group = group("year","month","day")
-				.avg("conso").as("General_Supply_KWH");
-		
-		Aggregation aggregation = newAggregation(
-				match,
-				project,
-				group,
-				sort(Sort.Direction.ASC, "year", "month", "day")
-				);
-		List<Energy> e = mongoTemplate.aggregate(aggregation, Energy.class, Energy.class).getMappedResults();
-		for(Energy energy:e){
-			energy.setDateByYMD();
-			energy.setCustomerKey(customerKey);
-			energy.setId(customerKey + "/" + energy.getDate().toString());
-		}
-		return e;
+		return mongoTemplate.findAll(Energy.class, collectionName);
 	}
 
 }
