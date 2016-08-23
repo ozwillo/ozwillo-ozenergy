@@ -13,8 +13,12 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-// Total consumption per day and consumer
 trait SumByDayAndCK extends Util with AvgByHourAndCK {
+  
+  /** Determines and saves the total consumption per day and customer
+   * 
+   * @param sc the context for Spark
+   */
   def sumByDayAndCK(sc: SparkContext) = {
     
     val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndCK"))
@@ -22,7 +26,11 @@ trait SumByDayAndCK extends Util with AvgByHourAndCK {
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumDayAndCK").drop()})
 	
     val resAvg = avgByHourAndCK(sc)
-    val rddDay = resAvg.map(doc => (doc.getString("contract"), dateFromStringdate(LocalDateTime.ofInstant(doc.get("date").asInstanceOf[Date].toInstant, ZoneId.systemDefault).toLocalDate().toString()), if (doc.get("globalKWH").getClass.toString() == "class java.lang.Integer") doc.getInteger("globalKWH").toDouble.asInstanceOf[java.lang.Double] else doc.getDouble("globalKWH").asInstanceOf[java.lang.Double]))
+    val rddDay = resAvg.map(doc => (doc.getString("contract"), 
+        dateFromStringdate(LocalDateTime.ofInstant(doc.get("date").asInstanceOf[Date].toInstant, ZoneId.systemDefault).toLocalDate().toString()), 
+        if (doc.get("globalKW").getClass.toString() == "class java.lang.Integer") 
+          doc.getInteger("globalKW").toDouble.asInstanceOf[java.lang.Double] 
+        else doc.getDouble("globalKW").asInstanceOf[java.lang.Double]))
 
     val sumRdd = rddDay.map(r => ((r._1, r._2), r)).reduceByKey((a,b) => (a._1, a._2, a._3+b._3))
 	

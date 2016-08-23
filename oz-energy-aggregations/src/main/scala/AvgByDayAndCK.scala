@@ -13,8 +13,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-// Average consumption per hour and per day for each consumer
 trait AvgByDayAndCK {
+  
+  /** Determines and saves the Average consumption per hour and per day for 
+   *  each consumer
+   * 
+   * @param sc the context for Spark
+   */
   def avgByDayAndCK(sc: SparkContext) = {
     
     //To have an empty output collection
@@ -25,13 +30,21 @@ trait AvgByDayAndCK {
   	
   	val rdd = MongoSpark.load(sc, readConfig)
   	
-  	val rddDate = rdd.map(doc => (doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:contract"), LocalDateTime.ofInstant(doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:date").asInstanceOf[Date].toInstant, ZoneId.systemDefault).toLocalDate().toString(), 1, if (doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:globalKWH").getClass.toString() == "class java.lang.Integer") doc.get("_p").asInstanceOf[org.bson.Document].getInteger("enercons:globalKWH").toDouble.asInstanceOf[java.lang.Double] else doc.get("_p").asInstanceOf[org.bson.Document].getDouble("enercons:globalKWH").asInstanceOf[java.lang.Double]))
+  	val rddDate = rdd.map(doc => (doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:contract"), 
+  	    LocalDateTime.ofInstant(doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:date").asInstanceOf[Date].toInstant, ZoneId.systemDefault).toLocalDate().toString(),
+  	    1, 
+  	    if (doc.get("_p").asInstanceOf[org.bson.Document].get("enercons:globalKWH").getClass.toString() == "class java.lang.Integer") 
+  	      doc.get("_p").asInstanceOf[org.bson.Document].getInteger("enercons:globalKWH").toDouble.asInstanceOf[java.lang.Double] 
+  	    else doc.get("_p").asInstanceOf[org.bson.Document].getDouble("enercons:globalKWH").asInstanceOf[java.lang.Double]))
   	
-  	val rddDateRedByKey = rddDate.map(r => ((r._1, r._2), r)).reduceByKey((a,b) => (a._1, a._2, a._3+b._3, a._4+b._4))
+  	val rddDateRedByKey = rddDate.map(r => ((r._1, r._2), r))
+  	            .reduceByKey((a,b) => (a._1, a._2, a._3+b._3, a._4+b._4))
   	
   	val finalRdd = rddDateRedByKey.map(a => (a._1, a._2._4/a._2._3))
   	
-  	val res = finalRdd.map(t => new Document("contract", t._1._1).append("date", Date.from(LocalDate.parse(t._1._2).atStartOfDay(ZoneId.systemDefault()).toInstant())).append("globalKWH", t._2))
+  	val res = finalRdd.map(t => new Document("contract", t._1._1)
+  	  .append("date", Date.from(LocalDate.parse(t._1._2).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+  	  .append("globalKW", t._2))
 
 	res.saveToMongoDB()
   }

@@ -11,8 +11,10 @@ import org.bson.Document
 
 trait City {
   
-  /*
-   * Find all cities which have consumers
+  /** Find all cities which have consumers
+   * 
+   * @param sc the context for Spark
+   * @return the cities
    */
   def getCities(sc: SparkContext): Array[String] = {
     //get geo data from Mongo Datacore
