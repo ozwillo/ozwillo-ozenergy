@@ -10,7 +10,7 @@ import org.bson.Document
 
 import org.apache.log4j.{Level, Logger}
 
-object Aggregations extends Serializable with AvgByDayAndCK with SumByDayAndCity with SumByDayAndCK with City {
+object Aggregations extends Serializable with AvgByDayAndCK with AvgByDayAndCity with SumByDayAndCK with City {
 	def main(args: Array[String]) {
 	
 	  val arg0 = args.headOption.getOrElse("none")
@@ -29,6 +29,12 @@ object Aggregations extends Serializable with AvgByDayAndCK with SumByDayAndCity
 	  val rootLogger = Logger.getRootLogger()
     rootLogger.setLevel(Level.ERROR)
 	  
+    def badArgs() = {
+      println("----------------------------------------")
+  	  println("Bad argument(s)")
+  	  println("----------------------------------------")
+	  }
+    
 	  if (args.length == 0) {
 	    println("----------------------------------------")
   	  println("No argument")
@@ -39,44 +45,37 @@ object Aggregations extends Serializable with AvgByDayAndCK with SumByDayAndCity
   	  if (args.length > 1 && args(1) == "cities") {
     	  val cities = getCities(sc)
     	  for (city <- cities) {
-    	    sumByDayAndCity(sc, city)
+    	    avgByDayAndCity(sc, city)
     	  }
   	  } else {
-  	    sumByDayAndCity(sc, "Paris")
-  	    sumByDayAndCity(sc, "Lyon")
+  	    avgByDayAndCity(sc, "Paris")
+  	    avgByDayAndCity(sc, "Lyon")
   	  }
   	  
   	} else if (args(0) == "avg") {
   	  if (args.length < 3) {
-    	  println("----------------------------------------")
-    	  println("Bad argument(s)")
-    	  println("----------------------------------------")
+    	  badArgs()
   	  } else if (args(1) == "day" && args(2)=="ck") {
   	    avgByDayAndCK(sc)
+  	  } else if (args(1) == "day" && args(2) == "city") {
+  	    if (args.length < 4) {
+  	      badArgs()
+  	    } else {
+  	      avgByDayAndCityFromScratch(sc, args(3))
+  	    }
+  	  
   	  } else {
   	    //nothing
   	  }
   	
   	} else if (args(0) == "sum") {
   	  if (args.length < 3) {
-    	  println("----------------------------------------")
-    	  println("Bad arguments")
-    	  println("----------------------------------------")
+    	  badArgs()
   	  } else if (args(1) == "day" && args(2) == "ck") {
   	    sumByDayAndCK(sc)
-  	  } else if (args(1) == "day" && args(2) == "city") {
-  	    if (args.length < 4) {
-      	  println("----------------------------------------")
-      	  println("Bad argument(s)")
-      	  println("----------------------------------------")
-  	    } else {
-  	      sumByDayAndCityFromScratch(sc, args(3))
-  	    }
   	  }
 	  } else {
-	    println("----------------------------------------")
-  	  println("Bad argument(s)")
-  	  println("----------------------------------------")
+	    badArgs()
   	}
 	
 	

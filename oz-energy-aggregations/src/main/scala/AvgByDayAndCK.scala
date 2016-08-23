@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
+// Average consumption per hour and per day for each consumer
 trait AvgByDayAndCK {
   def avgByDayAndCK(sc: SparkContext) = {
     

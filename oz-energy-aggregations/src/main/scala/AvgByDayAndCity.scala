@@ -10,8 +10,9 @@ import org.bson.Document
 
 import java.util.Date
 
-trait SumByDayAndCity extends Util with SumByDayAndCK {
-  def sumByDayAndCity(sc: SparkContext, city: String) = {
+// Find the average of the daily consumption in a city 
+trait AvgByDayAndCity extends Util with SumByDayAndCK {
+  def avgByDayAndCity(sc: SparkContext, city: String) = {
     //get the results from sumByDayAndCK from the database
     val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndCK", 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
@@ -55,9 +56,9 @@ trait SumByDayAndCity extends Util with SumByDayAndCK {
 	  
   }
   
-  def sumByDayAndCityFromScratch(sc: SparkContext, city: String) = {
+  def avgByDayAndCityFromScratch(sc: SparkContext, city: String) = {
     sumByDayAndCK(sc)
-    sumByDayAndCity(sc, city)
+    avgByDayAndCity(sc, city)
   }
  
 }

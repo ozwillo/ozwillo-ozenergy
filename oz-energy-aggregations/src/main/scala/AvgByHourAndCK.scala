@@ -15,6 +15,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
+// Average consumption per hour for each consumer
 trait AvgByHourAndCK {
   def avgByHourAndCK(sc: SparkContext): org.apache.spark.rdd.RDD[org.bson.Document] = {
     

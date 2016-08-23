@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-
+// Total consumption per day and consumer
 trait SumByDayAndCK extends Util with AvgByHourAndCK {
   def sumByDayAndCK(sc: SparkContext) = {
     

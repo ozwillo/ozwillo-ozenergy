@@ -10,6 +10,10 @@ import org.bson.Document
 
 
 trait City {
+  
+  /*
+   * Find all cities which have consumers
+   */
   def getCities(sc: SparkContext): Array[String] = {
     //get geo data from Mongo Datacore
   	val readConfigGeo = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.geo_1.geo:Area_0?readPreference=secondaryPreferred", "partitioner" -> "MongoPaginateBySizePartitioner"))
