@@ -9,6 +9,7 @@ import org.ozwillo.energy.mongo.dao.EnergyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = OzEnergyApplication.class)
@@ -38,6 +39,7 @@ public class AggregateApplicationTests {
 				+ "enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
 		List<Energy> energy = repository.findByContract(contract, "avgDayAndCK");
 		displayResults("avgDayAndCK", energy, "kWh");
+		Assert.assertEquals(contract, energy.get(0).getContract());
 		
 	}
 	
@@ -45,6 +47,7 @@ public class AggregateApplicationTests {
 	public void findByCityTest() {
 		List<Energy> energy = repository.findByCity("Lyon", "avgDay");
 		displayResults("avgDayForLyon", energy, "kWh");
+		Assert.assertEquals("", energy.get(0).getContract());
 	}
 
 }

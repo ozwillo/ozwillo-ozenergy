@@ -31,8 +31,8 @@ public class EnergyRepositoryImpl implements EnergyRepositoryCustom {
 	@Override
 	public List<Energy> findByCity(String city, String aggregation) {
 		String collectionName = aggregation + "For" + city;
-		
-		return mongoTemplate.findAll(Energy.class, collectionName);
+		Query query = new Query().with(new Sort(new Order(Direction.ASC, "date")));
+		return mongoTemplate.find(query, Energy.class, collectionName);
 	}
 
 }
