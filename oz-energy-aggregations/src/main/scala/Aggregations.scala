@@ -10,13 +10,13 @@ import org.bson.Document
 
 import org.apache.log4j.{Level, Logger}
 
-object Aggregations extends Serializable with AvgByDayAndCK with AvgByCity 
-with SumByDayAndCK with City with ByMonthAndCK with ByYearAndCK {
+object Aggregations extends Serializable with AvgByDayAndContract with AvgByCity 
+with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContract {
 	def main(args: Array[String]) {
 	
 	  val arg0 = args.headOption.getOrElse("none")
   	val inputUri: String = "mongodb://127.0.0.1/datacore.oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
-  	val outputUri: String = "mongodb://127.0.0.1/datacore1.avgDayAndCK"
+  	val outputUri: String = "mongodb://127.0.0.1/datacore1.avgDayAndContract"
   	
   	val conf = new SparkConf()
   		.setAppName("Aggregations")
@@ -44,12 +44,12 @@ with SumByDayAndCK with City with ByMonthAndCK with ByYearAndCK {
   	  println("No argument")
   	  println("----------------------------------------")
 	  } else if (args(0) == "all") {
-  	  avgByDayAndCK(sc)
-  	  sumByDayAndCK(sc)
-  	  avgByMonthAndCK(sc)
-  	  sumByMonthAndCK(sc)
-  	  avgByYearAndCKPerDay(sc)
-  	  sumByYearAndCK(sc)
+  	  avgByDayAndContract(sc)
+  	  sumByDayAndContract(sc)
+  	  avgByMonthAndContract(sc)
+  	  sumByMonthAndContract(sc)
+  	  avgByYearAndContractPerDay(sc)
+  	  sumByYearAndContract(sc)
   	  if (args.length > 1 && args(1) == "cities") {
     	  val cities = getCities(sc)
     	  for (city <- cities) {
@@ -68,8 +68,8 @@ with SumByDayAndCK with City with ByMonthAndCK with ByYearAndCK {
   	} else if (args(0) == "avg") {
   	  if (args.length < 3) {
     	  badArgs()
-  	  } else if (args(1) == "day" && args(2)=="ck") {
-  	    avgByDayAndCK(sc)
+  	  } else if (args(1) == "day" && args(2)=="Contract") {
+  	    avgByDayAndContract(sc)
   	  } else if (args(2) == "city") {
   	    if (args.length < 4) {
   	      badArgs()
@@ -80,10 +80,10 @@ with SumByDayAndCK with City with ByMonthAndCK with ByYearAndCK {
   	    } else if (args(1) == "year") {
   	      avgByYearAndCityFromScratch(sc, args(3))
   	    }
-  	  } else if (args(1) == "month" && args(2) == "ck") {
-  	    avgByMonthAndCKFromScratch(sc)
-  	  } else if (args(1) == "year" && args(2) == "ck") {
-  	    avgByYearAndCKPerDayFromScratch(sc)
+  	  } else if (args(1) == "month" && args(2) == "Contract") {
+  	    avgByMonthAndContractFromScratch(sc)
+  	  } else if (args(1) == "year" && args(2) == "Contract") {
+  	    avgByYearAndContractPerDayFromScratch(sc)
   	  } else {
   	    //nothing
   	  }
@@ -91,12 +91,12 @@ with SumByDayAndCK with City with ByMonthAndCK with ByYearAndCK {
   	} else if (args(0) == "sum") {
   	  if (args.length < 3) {
     	  badArgs()
-  	  } else if (args(1) == "day" && args(2) == "ck") {
-  	    sumByDayAndCK(sc)
-  	  } else if (args(1) == "month" && args(2) == "ck") {
-  	    sumByMonthAndCKFromScratch(sc)
-  	  } else if (args(1) == "year" && args(2) == "ck") {
-  	    sumByYearAndCKFromScratch(sc)
+  	  } else if (args(1) == "day" && args(2) == "Contract") {
+  	    sumByDayAndContract(sc)
+  	  } else if (args(1) == "month" && args(2) == "Contract") {
+  	    sumByMonthAndContractFromScratch(sc)
+  	  } else if (args(1) == "year" && args(2) == "Contract") {
+  	    sumByYearAndContractFromScratch(sc)
   	  }
 	  } else {
 	    badArgs()

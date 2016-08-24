@@ -13,19 +13,19 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-trait SumByDayAndCK extends Util with AvgByHourAndCK {
+trait SumByDayAndContract extends Util with AvgByHourAndContract {
   
   /** Determines and saves the total consumption per day and customer
    * 
    * @param sc the context for Spark
    */
-  def sumByDayAndCK(sc: SparkContext) = {
+  def sumByDayAndContract(sc: SparkContext) = {
     
-    val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndCK"))
+    val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndContract"))
     //To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumDayAndCK").drop()})
+	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumDayAndContract").drop()})
 	
-    val resAvg = avgByHourAndCK(sc)
+    val resAvg = avgByHourAndContract(sc)
     val rddDay = resAvg.map(doc => (doc.getString("contract"), 
         dateFromStringdate(LocalDateTime.ofInstant(doc.get("date").asInstanceOf[Date].toInstant, ZoneId.systemDefault).toLocalDate().toString()), 
         if (doc.get("globalKW").getClass.toString() == "class java.lang.Integer") 

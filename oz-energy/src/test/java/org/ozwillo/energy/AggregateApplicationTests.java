@@ -37,10 +37,9 @@ public class AggregateApplicationTests {
 	public void findByContractTest() {
 		String contract = "http://data.ozwillo.com/dc/type/"
 				+ "enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
-		List<Energy> energy = repository.findByContract(contract, "avgDayAndCK");
-		displayResults("avgDayAndCK", energy, "kWh");
+		List<Energy> energy = repository.findByContract(contract, "avgDayAndContract");
+		displayResults("avgDayAndContract", energy, "kWh");
 		Assert.assertEquals(contract, energy.get(0).getContract());
-		
 	}
 	
 	@Test

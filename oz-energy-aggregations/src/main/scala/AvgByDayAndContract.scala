@@ -13,17 +13,17 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-trait AvgByDayAndCK {
+trait AvgByDayAndContract {
   
   /** Determines and saves the Average consumption per hour and per day for 
    *  each consumer
    * 
    * @param sc the context for Spark
    */
-  def avgByDayAndCK(sc: SparkContext) = {
+  def avgByDayAndContract(sc: SparkContext) = {
     
     //To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgDayAndCK").drop()})
+	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgDayAndContract").drop()})
 	  
 	  //For compatibility with MongoDB 2.6, don't use MongoDefaultPartitioner nor MongoSamplePartitioner
   	val readConfig = ReadConfig(Map("partitioner" -> "MongoPaginateBySizePartitioner"), Some(ReadConfig(sc)))

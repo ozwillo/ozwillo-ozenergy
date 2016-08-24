@@ -10,16 +10,16 @@ import org.bson.Document
 
 import java.util.Date
 
-trait ByMonthAndCK extends Util with SumByDayAndCK {
+trait ByMonthAndContract extends Util with SumByDayAndContract {
   
-  /** Sums the consumption's data from the collection "sumDayAndCK"
+  /** Sums the consumption's data from the collection "sumDayAndContract"
    * 
    * @param sc the context for Spark
    * @return a spark rdd for the sum
    */
   def rddMonth(sc: SparkContext): org.apache.spark.rdd.RDD[((String, java.util.Date), (String, java.util.Date, Int, java.lang.Double))] = {
     //For compatibility with MongoDB 2.6, don't use MongoDefaultPartitioner nor MongoSamplePartitioner
-  	val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndCK", 
+  	val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndContract", 
   	    "partitioner" -> "MongoPaginateBySizePartitioner"))
   	
   	val rdd = MongoSpark.load(sc, readConfig)
@@ -38,14 +38,14 @@ trait ByMonthAndCK extends Util with SumByDayAndCK {
   
   
   /** Determines the average of the daily consumption over a month
-   *  from the collection "sumDayAndCK" 
+   *  from the collection "sumDayAndContract" 
    *  and saves it in a MongoDB collection
    *  
-   *  Assumes the collection "sumDayAndCK" is up to date
+   *  Assumes the collection "sumDayAndContract" is up to date
    *  
    * @param sc the context for Spark
    */
-  def avgByMonthAndCK(sc: SparkContext) = {
+  def avgByMonthAndContract(sc: SparkContext) = {
     
     val rddMonthRedByKey = rddMonth(sc)
   	
@@ -56,57 +56,57 @@ trait ByMonthAndCK extends Util with SumByDayAndCK {
   	                                 .append("globalKW", t._2))
   
   	//To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgMonthAndCK").drop()})
+	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgMonthAndContract").drop()})
   	
-  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.avgMonthAndCK"))
+  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.avgMonthAndContract"))
   	res.saveToMongoDB(writeConfig)
   }
   
   /** Determines the average of the daily consumption over a month
-   *  from the collection "sumDayAndCK" 
+   *  from the collection "sumDayAndContract" 
    *  and saves it in a MongoDB collection
    *  
    *  Re-runs all the necessary previous aggregations
    *  
    * @param sc the context for Spark
    */
-  def avgByMonthAndCKFromScratch(sc: SparkContext) = {
-    sumByDayAndCK(sc)
-    avgByMonthAndCK(sc)
+  def avgByMonthAndContractFromScratch(sc: SparkContext) = {
+    sumByDayAndContract(sc)
+    avgByMonthAndContract(sc)
   }
   
   
   /** Determines the sum of the consumption over a month
-   *  from the collection "sumDayAndCK" 
+   *  from the collection "sumDayAndContract" 
    *  and saves it in a MongoDB collection
    *  
-   *  Assumes the collection "sumDayAndCK" is up to date
+   *  Assumes the collection "sumDayAndContract" is up to date
    *  
    * @param sc the context for Spark
    */
-  def sumByMonthAndCK(sc: SparkContext) = {
+  def sumByMonthAndContract(sc: SparkContext) = {
     val rddMonthRedByKey = rddMonth(sc)
     val res = rddMonthRedByKey.map(t => new Document("contract", t._1._1)
       .append("date", t._1._2).append("globalKW", t._2._4))
   	
   	//To have an empty output collection
-  	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumMonthAndCK").drop()})
+  	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumMonthAndContract").drop()})
   	
-  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumMonthAndCK"))
+  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumMonthAndContract"))
   	res.saveToMongoDB(writeConfig)
   }
   
   /** Determines the sum of the consumption over a month
-   *  from the collection "sumDayAndCK" 
+   *  from the collection "sumDayAndContract" 
    *  and saves it in a MongoDB collection
    *  
    *  Re-runs all the necessary previous aggregations
    *  
    * @param sc the context for Spark
    */
-  def sumByMonthAndCKFromScratch(sc: SparkContext) = {
-    sumByDayAndCK(sc)
-    sumByMonthAndCK(sc)
+  def sumByMonthAndContractFromScratch(sc: SparkContext) = {
+    sumByDayAndContract(sc)
+    sumByMonthAndContract(sc)
   }
   
 }

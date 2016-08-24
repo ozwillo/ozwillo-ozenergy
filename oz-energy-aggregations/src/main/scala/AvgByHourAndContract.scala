@@ -15,14 +15,14 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
-trait AvgByHourAndCK {
+trait AvgByHourAndContract {
   
   /** Returns the average consumption per hour for each consumer
    * 
    * @param sc the context for Spark
    * @return a rdd for the average consumption
    */
-  def avgByHourAndCK(sc: SparkContext): org.apache.spark.rdd.RDD[org.bson.Document] = {
+  def avgByHourAndContract(sc: SparkContext): org.apache.spark.rdd.RDD[org.bson.Document] = {
     
     //For compatibility with MongoDB 2.6, don't use MongoDefaultPartitioner nor MongoSamplePartitioner
     val readConfig = ReadConfig(Map("partitioner" -> "MongoPaginateBySizePartitioner"), Some(ReadConfig(sc)))
