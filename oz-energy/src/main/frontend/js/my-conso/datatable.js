@@ -4,30 +4,10 @@ import { render } from 'react-dom'
 
 export class DataTable extends React.Component{
 
-	constructor() {
-		super();
-		this.state = {energy: []};
-	}
-
-	componentWillMount() {
-		$.ajax({
-			url: "/api/my/conso/" + this.props.ck_tmp + "/day",
-			type: 'get',
-			dataType: 'json',
-			success: function (data) {
-                var state = this.state;
-                state.energy = data;
-                this.setState(state);
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(status, err.toString());
-            }.bind(this)
-		})
-	}
 	render() {
 		return (
 			<div>
-				<EnergyList energies={this.state.energy} />
+				<EnergyList energies={this.props.energy} unit={this.props.unit} />
 			</div> 
 		);
 	}
@@ -68,7 +48,7 @@ class EnergyList extends React.Component{
             	<thead>
 	                <tr>
 	                    <th>Date </th>
-	                    <th>Consumption (kWh)</th>
+	                    <th>Consumption ({this.props.unit})</th>
 	                </tr>
                 </thead>
                 <tbody>

@@ -10,45 +10,77 @@ import {Today} from './today.js'
 import {DataTable} from './datatable.js'
 import {LineChart} from './linechart.js'
 import {YourConsumption} from './yourconsumption.js'
-import {YourData} from './yourdata.js'
 
 
 $(".nav li").removeClass("active");
 $('#my').addClass("active");
 
-var ck_tmp = 8170837;
+class App extends React.Component{
+	constructor(props) {
+		super(props);
+		this.state = {
+				agg: "By Day",
+				type: "Average",
+				energy: [],
+				mesureUnit: "kWh",
+		};
+	}
 
-{/*
-var DataAll = React.createClass({
-	getInitialState: function() {
-		return {energy: []};
-	},
-	componentDidMount: function() {
+	componentWillMount() {
+		this.updateData(this.state.type, this.state.agg);
+	}
+	
+	setParentStateType = (e) => {
+		this.setState({type: e});
+		this.updateData(e, this.state.agg);
+		this.updateMesureUnit(e, this.state.agg);
+	}
+	
+	setParentStateAgg = (e) => {
+		this.setState({agg: e});
+		this.updateData(this.state.type, e);
+		this.updateMesureUnit(this.state.type, e);
+	}
+	
+	endUri = (_type, _agg) => {
+		var agg = (_agg === "By Day") ? "day"
+				: (_agg === "By Month") ? "month"
+				: (_agg === "By Year") ? "year"
+				: "day";
+		var type = (_type === "Average") ? "avg"
+				: (_type === "Cumulated") ? "sum"
+				: "avg";
+		return "/"+type+"/"+agg;
+	}
+	
+	updateData = (_type, _agg) => {
+		var endUri = this.endUri(_type, _agg);
+		var reactComponent = this;
 		$.ajax({
-			//url: "/api/my/conso/" + default_app.id,
-			url: "/api/my/conso/" + ck_tmp,
+			url: "/api/my/conso/contract" + endUri,
 			type: 'get',
 			dataType: 'json',
 			success: function (data) {
-                var state = this.state;
-                state.energy = data;
-                this.setState(state);
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(status, err.toString());
-            }.bind(this)
+	            reactComponent.setState({energy: data});
+	            reactComponent.setState({energy2: data});
+	        },
+	        error: function (xhr, status, err) {
+	            console.error(status, err.toString());
+	        }
 		})
-	},
-	render: function () {
-		return (
-				<EnergyList energies={this.state.energy} />
-		);
 	}
-})
-*/}
-
-class App extends React.Component{
-  	render() {
+	
+	updateMesureUnit = (_type, _agg) => {
+			var unit = (_type === "Cumulated") ? "kW"
+					: (_type === "Average" && _agg === "By Day") ? "kWh"
+					: (_type === "Average" && _agg === "By Month") ? "kW/day"
+					: (_type === "Average" && _agg === "By Year") ? "kW/day"
+					: "kW";
+			this.setState({mesureUnit: unit});
+	}
+	
+	render() {
+		var energy = this.state.energy.slice(0);
   		return (
   			<div>
 
@@ -81,11 +113,13 @@ class App extends React.Component{
 					<div className="col-sm-8 col-sm-pull-4" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title"><YourConsumption/></h3>
+				              	<h3 className="panel-title"><YourConsumption title="Individual energy's consumption" 
+				              		setParentStateType={this.setParentStateType} setParentStateAgg={this.setParentStateAgg}
+				              		type={this.state.type} agg={this.state.agg}/></h3>
 				            </div>
 				            <div className="panel-body">
-								<LineChart ck_tmp={ck_tmp}/>
-				            </div>
+								<LineChart energy={energy} type={this.state.type} agg={this.state.agg} updateData ={this.updateData} />
+							</div>
 			            </div>
   					</div>
   				
@@ -117,10 +151,12 @@ class App extends React.Component{
 					<div className="col-sm-6 col-sm-pull-6" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title"><YourData /></h3>
+				              	<h3 className="panel-title"><YourConsumption title="Your Data"
+				              		setParentStateType={this.setParentStateType} setParentStateAgg={this.setParentStateAgg}
+			              			type={this.state.type} agg={this.state.agg}/></h3>
 				            </div>
 				            <div className="panel-body">
-								<DataTable ck_tmp={ck_tmp} />
+								<DataTable energy={this.state.energy} unit={this.state.mesureUnit}/>
 				            </div>
 				          </div>
 					</div>

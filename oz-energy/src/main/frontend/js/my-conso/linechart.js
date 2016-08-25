@@ -118,16 +118,15 @@ export class LineChart extends React.Component{
     }
     
 	componentDidMount() {
-		this.updateSize();
-		this.updateData();
+		this.props.updateData(this.props.type, this.props.agg);
 	}
 	
     componentWillUnmount() {
     	$(window).off('resize');
-    	this.updateData();
+    	this.props.updateData(this.props.type, this.props.agg);
     }
-
-	updateSize() {
+    
+	updateSize = () => {
 	    var node = ReactDOM.findDOMNode(this);
 	    var parentWidth=$(node).width();
 	
@@ -136,28 +135,12 @@ export class LineChart extends React.Component{
 	    }else{
 	        this.setState({width:this.props.width});
 	    }
-	    this.updateData();
-	}
-	
-	updateData() {
-		$.ajax({
-			url: "/api/my/conso/" + this.props.ck_tmp + "/day",
-			type: 'get',
-			dataType: 'json',
-			success: function (data) {
-	            var state = this.state;
-	            state.energy = data;
-	            this.setState(state);
-	        }.bind(this),
-	        error: function (xhr, status, err) {
-	            console.error(status, err.toString());
-	        }.bind(this)
-		})
+	    this.props.updateData(this.props.type, this.props.agg);
 	}
     
     render() {
-		
-		var data = this.state.energy;
+    	var data = this.props.energy.slice(0);
+    	var type = this.props.type.slice(0);
         var margin = {top: 5, right: 50, bottom: 90, left: 50},
             w = this.state.width - (margin.left + margin.right),
             h = this.props.height - (margin.top + margin.bottom);
@@ -165,7 +148,6 @@ export class LineChart extends React.Component{
         data.forEach(function (d) {
         	var date = new Date(d.date);
             d.Date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            console.log(d.Date);
         });
 
         var x = d3.time.scale()
@@ -173,10 +155,14 @@ export class LineChart extends React.Component{
                 return d.Date;
             }))
             .rangeRound([0, w]);
-
+        
+        var add = (type === "Average") ? 0.2
+        		: (type === "Cumulated") ? 10
+        		: 100;
+        
         var y = d3.scale.linear()
             .domain([0,d3.max(data,function(d){
-                return d.consumption+0.2;
+                return d.consumption+add;
             })])
             .range([h, 0]);
         
@@ -214,6 +200,11 @@ export class LineChart extends React.Component{
 
         return (
             <div>
+	            <div className="right">
+	            	<button type="button" className="btn btn-default btn-sm"><span className="glyphicon glyphicon-arrow-left"> </span></button>
+	            	<button type="button" className="btn btn-default btn-sm"> <span className="glyphicon glyphicon-arrow-right"></span></button>
+	            </div>
+	            <div>
                 <svg id={this.props.chartId} width={this.state.width} height={this.props.height}>
 
                     <g transform={transform}>
@@ -224,6 +215,7 @@ export class LineChart extends React.Component{
 	                    <Dots data={data} x={x} y={y}/>
                     </g>
                 </svg>
+                </div>
             </div>
         );
     }
@@ -236,7 +228,7 @@ LineChart.propTypes = {
 };
 
 LineChart.defaultProps = {
-    width: 600,
+    width: window.innerWidth*0.40,
     height: 300,
     chartId: 'v1_chart'
 };

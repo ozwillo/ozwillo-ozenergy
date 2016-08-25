@@ -86,7 +86,7 @@ body {
 }
 
 .right {
-	tex-align: right;
+	text-align: right;
 }
 
 /* DataTable */
@@ -154,6 +154,13 @@ body {
 .panel-success > .panel-footer + .panel-collapse > .panel-body {
   border-bottom-color: #4e9a06;
 }
+/* Style for arrow buttons */
+
+.btn-default{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 
 /* Style Bootstraps'Dropdown List success */
 .btn-success {
