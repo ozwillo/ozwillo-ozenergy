@@ -90,12 +90,72 @@ body {
 }
 
 /* DataTable */
- .data table {
-	overflow-x:auto;
+/*  .data  {
+ 	display: block;
+	height: 100px;
+	overflow: auto;
+}  */
+
+/* .data thead {
+  width: 100%;
+}
+.data tbody {
+  height: 230px;
+  overflow-y: auto;
+  width: 100%;
+}
+.data thead, .data tbody, .data tr, .data td, .data th {
+  display: block;
+}
+.data tbody td, .data thead > tr> th {
+  float: left;
+}
+ */
+ 
+
+.data table {
+	overflow-x: auto;
+/* 	width: 200px;
+	height: 300px; */
+}
+
+ .data {
+    width: 350px; 
 } 
 
+.data > thead,
+.data > tbody,
+.data > thead > tr,
+.data > tbody > tr,
+.data > thead > tr > th,
+.data > tbody > tr > td {
+    display: block;
+}
+
+.data > tbody > tr:after,
+.data > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.data > thead {
+	width: 100%;
+}
+.data > tbody {
+    overflow-y: auto;
+    height: 250px;
+    width: 100%;
+}
+
+.data > tbody > tr > td,
+.data > thead > tr > th {
+    width: 50%;
+    float: left;
+}
+
 .data th, .data td {
-	border: 1px solid #ddd;
     text-align: center;
     padding-right: 15px;
     padding-left: 15px;

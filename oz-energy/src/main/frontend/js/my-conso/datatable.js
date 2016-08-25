@@ -43,7 +43,7 @@ class EnergyList extends React.Component{
         );
         
         return (
-        		<div className="table-responsive">
+        		<div className="table table-condensed table-striped table-responsive">
             <table className="data">
             	<thead>
 	                <tr>

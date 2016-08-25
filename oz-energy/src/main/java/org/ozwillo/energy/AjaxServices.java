@@ -22,16 +22,14 @@ public class AjaxServices {
 	public List<Energy> avgConsumerDataByDay() {
 		String contract = "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
 		List<Energy> energy= repository.findByContract(contract, "avgDayAndContract");
-		List <Energy> tenFirst = energy.subList(0, 10);
-		return tenFirst;
+		return energy;
 	}
 
 	@RequestMapping(value="/contract/avg/month", method = RequestMethod.GET)
 	public List<Energy> avgConsumerDataByMonth() {
 		String contract = "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
 		List<Energy> energy= repository.findByContract(contract, "avgMonthAndContract");
-		List <Energy> tenFirst = energy.subList(0, 10);
-		return tenFirst;
+		return energy;
 	}
 	
 	@RequestMapping(value="/contract/avg/year", method = RequestMethod.GET)
@@ -45,16 +43,14 @@ public class AjaxServices {
 	public List<Energy> sumConsumerDataByDay() {
 		String contract = "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
 		List<Energy> energy= repository.findByContract(contract, "sumDayAndContract");
-		List <Energy> tenFirst = energy.subList(0, 10);
-		return tenFirst;
+		return energy;
 	}
 	
 	@RequestMapping(value="/contract/sum/month", method = RequestMethod.GET)
 	public List<Energy> sumConsumerDataByMonth() {
 		String contract = "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
 		List<Energy> energy= repository.findByContract(contract, "sumMonthAndContract");
-		List <Energy> tenFirst = energy.subList(0, 10);
-		return tenFirst;
+		return energy;
 	}
 	
 	@RequestMapping(value="/contract/sum/year", method = RequestMethod.GET)

@@ -104,8 +104,9 @@ export class LineChart extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-	        	energy: [],
-	        	width: this.props.width
+				energy: [],
+	        	width: this.props.width,
+	        	start: 0,
 	        };
 	}
 
@@ -138,8 +139,44 @@ export class LineChart extends React.Component{
 	    this.props.updateData(this.props.type, this.props.agg);
 	}
     
+	lengthDisplay = () => {
+		return (this.props.agg === "By Day") ? 7
+				: (this.props.agg === "By Month") ? 6
+				: (this.props.agg === "By Year") ? this.props.energy.slice(0).length
+				: 7;
+	}
+	
+	dataForChart = () => {
+		var start = this.state.start;
+		return data = this.props.energy.slice(start, start + this.lengthDisplay());
+	}
+	
+	previous = () => {
+		var actual = this.state.start;
+		var length = this.props.energy.slice(0).length;
+		var lengthDisplay = this.lengthDisplay();
+		var previous = actual - lengthDisplay;
+		if (lengthDisplay > 1 && actual > lengthDisplay - 1) {
+			this.setState({start: previous});
+		}
+		this.props.updateData(this.props.type, this.props.agg);
+	}
+	
+	next = () => {
+		var actual = this.state.start;
+		var length = this.props.energy.slice(0).length;
+		var lengthDisplay = this.lengthDisplay();
+		var next = actual + lengthDisplay;
+		if (actual < length - lengthDisplay) {
+			this.setState({start: next});
+		}
+		this.props.updateData(this.props.type, this.props.agg);
+	}
+	
+	
     render() {
-    	var data = this.props.energy.slice(0);
+    	//var data = this.props.energy.slice(0);
+    	var data = this.props.energy.slice(this.state.start, this.state.start + this.lengthDisplay());
     	var type = this.props.type.slice(0);
         var margin = {top: 5, right: 50, bottom: 90, left: 50},
             w = this.state.width - (margin.left + margin.right),
@@ -201,8 +238,8 @@ export class LineChart extends React.Component{
         return (
             <div>
 	            <div className="right">
-	            	<button type="button" className="btn btn-default btn-sm"><span className="glyphicon glyphicon-arrow-left"> </span></button>
-	            	<button type="button" className="btn btn-default btn-sm"> <span className="glyphicon glyphicon-arrow-right"></span></button>
+	            	<button type="button" className="btn btn-default btn-sm" onClick={this.previous}><span className="glyphicon glyphicon-arrow-left"> </span></button>
+	            	<button type="button" className="btn btn-default btn-sm" onClick={this.next}> <span className="glyphicon glyphicon-arrow-right"></span></button>
 	            </div>
 	            <div>
                 <svg id={this.props.chartId} width={this.state.width} height={this.props.height}>
