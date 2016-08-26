@@ -22,7 +22,7 @@ class App extends React.Component{
 				agg: "By Day",
 				type: "Average",
 				energy: [],
-				mesureUnit: "kWh",
+				measureUnit: "kWh",
 				year: "Year",
 				start: 0,
 		};
@@ -112,6 +112,7 @@ class App extends React.Component{
 	render() {
 		var energy = this.state.energy.slice(0);
 		var years = this.findYears(energy);
+		var consumptionTitle = "Individual energy's consumption (in " + this.state.measureUnit + ")";
   		return (
   			<div>
 
@@ -144,15 +145,15 @@ class App extends React.Component{
 					<div className="col-sm-8 col-sm-pull-4" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title"><YourConsumption title="Individual energy's consumption" 
+				              	<h3 className="panel-title"><YourConsumption title={consumptionTitle}
 				              		setParentStateType={this.setParentStateType} setParentStateAgg={this.setParentStateAgg}
-				              		type={this.state.type} agg={this.state.agg}/></h3>
+				              		type={this.state.type} agg={this.state.agg} /></h3>
 				            </div>
 				            <div className="panel-body">
 								<LineChart energy={energy} type={this.state.type} agg={this.state.agg} 
 								updateData ={this.updateData} setParentStateYear={this.setParentStateYear}
 								setParentStateStart={this.setParentStateStart} start={this.state.start}
-								years={years} year={this.state.year}/>
+								years={years} year={this.state.year} />
 							</div>
 			            </div>
   					</div>
@@ -190,7 +191,7 @@ class App extends React.Component{
 			              			type={this.state.type} agg={this.state.agg} /></h3>
 				            </div>
 				            <div className="panel-body">
-								<DataTable energy={this.state.energy} unit={this.state.mesureUnit}/>
+								<DataTable energy={this.state.energy} unit={this.state.measureUnit}/>
 				            </div>
 				          </div>
 					</div>
