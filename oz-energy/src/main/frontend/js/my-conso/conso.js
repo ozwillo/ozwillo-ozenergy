@@ -113,6 +113,7 @@ class App extends React.Component{
 		var energy = this.state.energy.slice(0);
 		var years = this.findYears(energy);
 		var consumptionTitle = "Individual energy's consumption (in " + this.state.measureUnit + ")";
+		var agg = this.state.agg.slice(0);
   		return (
   			<div>
 
@@ -191,7 +192,7 @@ class App extends React.Component{
 			              			type={this.state.type} agg={this.state.agg} /></h3>
 				            </div>
 				            <div className="panel-body">
-								<DataTable energy={this.state.energy} unit={this.state.measureUnit}/>
+								<DataTable energy={this.state.energy} unit={this.state.measureUnit} agg={agg}/>
 				            </div>
 				          </div>
 					</div>

@@ -153,18 +153,17 @@ export class LineChart extends React.Component{
 	}
 	
 	previous = () => {
-		var actual = this.props.start; //state
+		var actual = this.props.start;
 		var lengthDisplay = this.lengthDisplay();
 		var previous = actual - lengthDisplay;
 		if (lengthDisplay > 1 && actual > lengthDisplay - 1) {
-			//this.setState({start: previous});
 			this.props.setParentStateStart(previous);
 		}
 		this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
 	
 	next = () => {
-		var actual = this.props.start; //state
+		var actual = this.props.start; 
 		var energy = this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
     	if (this.props.year === "Year") {
     	} else {
@@ -175,7 +174,6 @@ export class LineChart extends React.Component{
 		var lengthDisplay = this.lengthDisplay();
 		var next = actual + lengthDisplay;
 		if (actual < length - lengthDisplay - 1) {
-			//this.setState({start: next});
 			this.props.setParentStateStart(next);
 		}
 		this.props.updateData(this.props.type, this.props.agg, this.props.year);
@@ -209,7 +207,6 @@ export class LineChart extends React.Component{
 	}
 	
     render() {
-    	var energyFull = this.props.energy.slice(0);
     	var years = this.props.years;
     	var energy = this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
     	if (this.props.year === "Year") {
@@ -221,9 +218,10 @@ export class LineChart extends React.Component{
     	var energy = (this.props.year !== "Year") ? energy = this.findDataYear(this.props.energy.slice(0), this.props.year, this.props.agg)
     			: this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
     				
-    	var start = this.props.start; //state
+    	var start = this.props.start; 
     	var data = energy.slice(start, start + this.lengthDisplay());
     	var type = this.props.type.slice(0);
+    	var agg = this.props.agg.slice(0);
     	
 		
 		var yearItems = years.map((year,i) =>
@@ -260,6 +258,10 @@ export class LineChart extends React.Component{
 	        .orient('left')
 	        .ticks(5);
 
+       var format = (agg === "By Month") ? "%Y %B"
+    		   : (agg === "By Year") ? "%Y"
+    		   : "%Y-%m-%d";
+       
 	   var xAxis = d3.svg.axis()
 	        .scale(x)
 	        .orient('bottom')
@@ -268,7 +270,7 @@ export class LineChart extends React.Component{
 	                return d.Date;
 	        }).splice(1))
 	        .ticks(4)
-	        .tickFormat(d3.time.format("%Y-%m-%d")); 
+	        .tickFormat(d3.time.format(format)); 
 	   
 	    var yGrid = d3.svg.axis()
 	        .scale(y)

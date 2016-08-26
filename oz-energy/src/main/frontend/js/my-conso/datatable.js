@@ -7,7 +7,7 @@ export class DataTable extends React.Component{
 	render() {
 		return (
 			<div>
-				<EnergyList energies={this.props.energy} unit={this.props.unit} />
+				<EnergyList energies={this.props.energy} unit={this.props.unit} agg={this.props.agg}/>
 			</div> 
 		);
 	}
@@ -17,7 +17,7 @@ export class DataTable extends React.Component{
 class EnergyList extends React.Component{
 	render() {
 		var data = this.props.energies;
-		
+		var agg = this.props.agg;
         data.forEach(function (d) {
         	var date = new Date(d.date);
         	var year = date.getFullYear();
@@ -25,15 +25,41 @@ class EnergyList extends React.Component{
         	var day = date.getDate();
         	if (month < 10) {
         		if(day<10) {
-        			d.Date = year + "-0" + month + "-0" + day;
+        			if(agg === "By Month") {
+        				d.Date = year + "-0" + month;
+        			} else if (agg === "By Year") {
+        				d.Date = year; 
+        			} else {
+        				d.Date = year + "-0" + month + "-0" + day;
+        			}
         		} else {
-        			d.Date = year + "-0" + month + "-" + day;
+        			if(agg === "By Month") {
+        				d.Date = year + "-0" + month;
+        			}  else if (agg === "By Year") {
+        				d.Date = year;
+        			} else {
+        				d.Date = year + "-0" + month + "-" + day;
+        			}
         		}
         	} else {
         		if (day<10) {
-        			d.Date = year + "-" + month + "-0" + day;
+        			if(agg === "By Month") {
+        				d.Date = year + "-" + month;
+        			} else if (agg === "By Year") {
+        				d.Date = year;
+        			} else {
+        				d.Date = year + "-" + month + "-0" + day;
+        			}
+        			
         		} else {
-        			d.Date = year + "-" + month + "-" + day;
+        			if(agg === "By Month") {
+        				d.Date = year + "-" + month;
+        			} else if (agg === "By Year") {
+        				d.Date = year;
+        			} else {
+        				d.Date = year + "-" + month + "-" + day;
+        			}
+        			
         		}
         	}
         });
@@ -47,7 +73,7 @@ class EnergyList extends React.Component{
             <table className="data">
             	<thead>
 	                <tr>
-	                    <th>Date</th>
+	                    <th>Date </th>
 	                    <th>Consumption ({this.props.unit})</th>
 	                </tr>
                 </thead>
