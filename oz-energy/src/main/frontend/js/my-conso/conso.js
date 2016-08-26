@@ -24,23 +24,36 @@ class App extends React.Component{
 				energy: [],
 				mesureUnit: "kWh",
 				year: "Year",
+				start: 0,
 		};
 	}
 
 	componentWillMount() {
 		this.updateData(this.state.type, this.state.agg, "Year");
+		this.setParentStateStart(0);
+	}
+	
+	setParentStateYear = (e) => {
+		this.setState({year: e});
+		this.setParentStateStart(0);
+	}
+	
+	setParentStateStart = (e) => {
+		this.setState({start: e});
 	}
 	
 	setParentStateType = (e) => {
 		this.setState({type: e});
 		this.updateData(e, this.state.agg, "Year");
 		this.updateMesureUnit(e, this.state.agg);
+		this.setParentStateStart(0);
 	}
 	
 	setParentStateAgg = (e) => {
 		this.setState({agg: e});
 		this.updateData(this.state.type, e, "Year");
 		this.updateMesureUnit(this.state.type, e);
+		this.setParentStateStart(0);
 	}
 	
 	endUri = (_type, _agg) => {
@@ -84,9 +97,7 @@ class App extends React.Component{
 			this.setState({mesureUnit: unit});
 	}
 	
-	setParentStateYear = (e) => {
-		this.setState({year: e});
-	}
+
 	
 	findYears = (energy) => {
 		var years = [];
@@ -140,6 +151,7 @@ class App extends React.Component{
 				            <div className="panel-body">
 								<LineChart energy={energy} type={this.state.type} agg={this.state.agg} 
 								updateData ={this.updateData} setParentStateYear={this.setParentStateYear}
+								setParentStateStart={this.setParentStateStart} start={this.state.start}
 								years={years} year={this.state.year}/>
 							</div>
 			            </div>

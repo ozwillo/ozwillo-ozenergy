@@ -113,7 +113,6 @@ export class LineChart extends React.Component{
 		super(props);
 		this.state = {
 	        	width: this.props.width,
-	        	start: 0,
 	        };
 	}
 
@@ -154,25 +153,33 @@ export class LineChart extends React.Component{
 	}
 	
 	previous = () => {
-		var actual = this.state.start;
-		var length = this.props.energy.slice(0).length;
+		var actual = this.props.start; //state
 		var lengthDisplay = this.lengthDisplay();
 		var previous = actual - lengthDisplay;
 		if (lengthDisplay > 1 && actual > lengthDisplay - 1) {
-			this.setState({start: previous});
+			//this.setState({start: previous});
+			this.props.setParentStateStart(previous);
 		}
 		this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
 	
 	next = () => {
-		var actual = this.state.start;
-		var length = this.props.energy.slice(0).length;
+		var actual = this.props.start; //state
+		var energy = this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
+    	if (this.props.year === "Year") {
+    	} else {
+    		energy = this.findDataYear(this.props.energy.slice(0), this.props.year, this.props.agg);
+    	}
+		var length = energy.length;
+		console.log("length in next", length);
 		var lengthDisplay = this.lengthDisplay();
 		var next = actual + lengthDisplay;
-		if (actual < length - lengthDisplay) {
-			this.setState({start: next});
+		if (actual < length - lengthDisplay - 1) {
+			//this.setState({start: next});
+			this.props.setParentStateStart(next);
 		}
 		this.props.updateData(this.props.type, this.props.agg, this.props.year);
+		console.log("next :", next);
 	}
 	
 	findDataYear = (energy, year, agg) => {
@@ -209,7 +216,12 @@ export class LineChart extends React.Component{
     	} else {
     		energy = this.findDataYear(this.props.energy.slice(0), this.props.year, this.props.agg);
     	}
-    	var start = this.state.start;
+    	
+    	
+    	var energy = (this.props.year !== "Year") ? energy = this.findDataYear(this.props.energy.slice(0), this.props.year, this.props.agg)
+    			: this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
+    				
+    	var start = this.props.start; //state
     	var data = energy.slice(start, start + this.lengthDisplay());
     	var type = this.props.type.slice(0);
     	
