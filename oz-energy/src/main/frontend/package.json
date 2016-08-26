@@ -1,7 +1,7 @@
 {
   "name": "oz-energy",
   "version": "1.0.0",
-  "description": "Web application for energy's consummers and administrations",
+  "description": "Web application for energy's consumers and administrations",
   "main": "./src/main/resources/js/index.js",
     "dependencies": {
     "compression": "^1.6.1",

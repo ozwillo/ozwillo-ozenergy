@@ -87,6 +87,12 @@ body {
 
 .right {
 	text-align: right;
+	position: absolute;
+    right: 40px;
+}
+
+.invisible {
+	display: none;
 }
 
 /* DataTable */
@@ -142,6 +148,7 @@ body {
 
 .data > thead {
 	width: 100%;
+	background-color: #3c763d;
 }
 .data > tbody {
     overflow-y: auto;
@@ -153,10 +160,7 @@ body {
 .data > thead > tr > th {
     width: 50%;
     float: left;
-}
-
-.data th, .data td {
-    text-align: center;
+   	text-align: center;
     padding-right: 15px;
     padding-left: 15px;
 }

@@ -47,7 +47,7 @@ class EnergyList extends React.Component{
             <table className="data">
             	<thead>
 	                <tr>
-	                    <th>Date </th>
+	                    <th>Date</th>
 	                    <th>Consumption ({this.props.unit})</th>
 	                </tr>
                 </thead>

@@ -100,11 +100,18 @@ Dots.propTypes = {
 
 };
 
+class Year extends React.Component {
+	render() {
+		return (
+				<li><a id={this.props.year} href="#" onClick={this.props.handleChange}>{this.props.year}</a></li>
+		);
+	}
+}
+
 export class LineChart extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-				energy: [],
 	        	width: this.props.width,
 	        	start: 0,
 	        };
@@ -119,12 +126,12 @@ export class LineChart extends React.Component{
     }
     
 	componentDidMount() {
-		this.props.updateData(this.props.type, this.props.agg);
+		this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
 	
     componentWillUnmount() {
     	$(window).off('resize');
-    	this.props.updateData(this.props.type, this.props.agg);
+    	this.props.updateData(this.props.type, this.props.agg, this.props.year);
     }
     
 	updateSize = () => {
@@ -136,7 +143,7 @@ export class LineChart extends React.Component{
 	    }else{
 	        this.setState({width:this.props.width});
 	    }
-	    this.props.updateData(this.props.type, this.props.agg);
+	    this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
     
 	lengthDisplay = () => {
@@ -144,11 +151,6 @@ export class LineChart extends React.Component{
 				: (this.props.agg === "By Month") ? 6
 				: (this.props.agg === "By Year") ? this.props.energy.slice(0).length
 				: 7;
-	}
-	
-	dataForChart = () => {
-		var start = this.state.start;
-		return data = this.props.energy.slice(start, start + this.lengthDisplay());
 	}
 	
 	previous = () => {
@@ -159,7 +161,7 @@ export class LineChart extends React.Component{
 		if (lengthDisplay > 1 && actual > lengthDisplay - 1) {
 			this.setState({start: previous});
 		}
-		this.props.updateData(this.props.type, this.props.agg);
+		this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
 	
 	next = () => {
@@ -170,14 +172,52 @@ export class LineChart extends React.Component{
 		if (actual < length - lengthDisplay) {
 			this.setState({start: next});
 		}
-		this.props.updateData(this.props.type, this.props.agg);
+		this.props.updateData(this.props.type, this.props.agg, this.props.year);
 	}
 	
+	findDataYear = (energy, year, agg) => {
+		if(agg === "By Year") {
+			return energy;
+		} else {
+			var data = [];
+			energy.forEach(function(e) {
+				if(e.date.slice(0,4) === year){
+					data.push(e);
+				}
+			});
+			return data;
+		}
+	}
+
+	visible = (agg) => {
+		if (agg === "By Year") {
+			return "invisible";
+		} else {
+			return "visible";
+		}
+	}
+	
+	handleChange = (e) => {
+		this.props.setParentStateYear(e.target.id);
+	}
 	
     render() {
-    	//var data = this.props.energy.slice(0);
-    	var data = this.props.energy.slice(this.state.start, this.state.start + this.lengthDisplay());
+    	var energyFull = this.props.energy.slice(0);
+    	var years = this.props.years;
+    	var energy = this.findDataYear(this.props.energy.slice(0), this.props.years.slice(0,1), this.props.agg);
+    	if (this.props.year === "Year") {
+    	} else {
+    		energy = this.findDataYear(this.props.energy.slice(0), this.props.year, this.props.agg);
+    	}
+    	var start = this.state.start;
+    	var data = energy.slice(start, start + this.lengthDisplay());
     	var type = this.props.type.slice(0);
+    	
+		
+		var yearItems = years.map((year,i) =>
+        	<Year key={i} year={year} handleChange={this.handleChange}/>
+		);
+    	
         var margin = {top: 5, right: 50, bottom: 90, left: 50},
             w = this.state.width - (margin.left + margin.right),
             h = this.props.height - (margin.top + margin.bottom);
@@ -238,8 +278,23 @@ export class LineChart extends React.Component{
         return (
             <div>
 	            <div className="right">
+	            	<table><tbody><tr>
+	            	<td>
+	            	<div className={this.visible(this.props.agg)}>
+					<div className="dropdown">
+					  <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					    {this.props.year} 
+					    <span className="caret"></span>
+					  </button>
+					  <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+					  	{yearItems}
+					  </ul>
+					</div> </div></td>
+					<td>
 	            	<button type="button" className="btn btn-default btn-sm" onClick={this.previous}><span className="glyphicon glyphicon-arrow-left"> </span></button>
 	            	<button type="button" className="btn btn-default btn-sm" onClick={this.next}> <span className="glyphicon glyphicon-arrow-right"></span></button>
+	            	</td>
+	            	</tr></tbody></table>
 	            </div>
 	            <div>
                 <svg id={this.props.chartId} width={this.state.width} height={this.props.height}>
