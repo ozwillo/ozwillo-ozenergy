@@ -104,30 +104,21 @@ class App extends React.Component{
 				<div className="row">
 				
 						
-					<div className="col-sm-4 col-sm-push-8" >
+					<div className="col-sm-4" >
 						<div className="panel panel-success">
 							<div className="panel-heading">
-								<h3 className="panel-title">Welcome ! </h3>
+								<h3 className="panel-title"><ConsumptionChoice title="Data"
+								setParentStateCity={this.setParentStateCity} setParentStateAgg={this.setParentStateAgg}
+								city={this.state.city} agg={this.state.agg} /></h3>
 							</div>
 							<div className="panel-body">
-								<Today />
-							</div>
-						</div>
-					
-						<div className="panel panel-success">
-							<div className="panel-heading">
-								<h3 className="panel-title"> TODO : Overview </h3>
-							</div>
-							<div className="panel-body">
-								<div className="text">
-									Here you will see whether or not your consumption goes up, and in which proportions.
-								</div>
+								<DataTable energy={this.state.energy} unit={this.state.measureUnit} agg={agg}/>
 							</div>
 						</div>
 					</div>
 						
 						
-					<div className="col-sm-8 col-sm-pull-4" >
+					<div className="col-sm-8" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
 				              	<h3 className="panel-title"><ConsumptionChoice title={consumptionTitle}
@@ -146,43 +137,6 @@ class App extends React.Component{
 
 				</div>
   				
-				
-				<div className="row">
-				
-					<div className="col-sm-6 col-sm-push-6" >
-						<div className="panel panel-success">
-							<div className="panel-heading">
-								<h3 className="panel-title">TODO : Consumption's indicators</h3>
-							</div>
-							<div className="panel-body">
-								<div className="text">
-									Here you will see your :
-									<ul>
-										<li>average consumption of the month</li>
-										<li>total consumption of the month</li>
-										<li>max total consumption for days/months/year</li>
-										<li>...</li>
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				
-					<div className="col-sm-6 col-sm-pull-6" >
-						<div className="panel panel-success">
-				            <div className="panel-heading">
-				              	<h3 className="panel-title"><ConsumptionChoice title="Data"
-				              		setParentStateCity={this.setParentStateCity} setParentStateAgg={this.setParentStateAgg}
-			              			city={this.state.city} agg={this.state.agg} /></h3>
-				            </div>
-				            <div className="panel-body">
-								<DataTable energy={this.state.energy} unit={this.state.measureUnit} agg={agg}/>
-				            </div>
-				          </div>
-					</div>
-				
-					
-				</div>
 			
   			</div>
   		);

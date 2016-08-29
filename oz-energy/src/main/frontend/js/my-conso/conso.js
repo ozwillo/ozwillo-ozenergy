@@ -10,7 +10,8 @@ import {Today} from './today.js'
 import {DataTable} from './datatable.js'
 import {LineChart} from './linechart.js'
 import {YourConsumption} from './yourconsumption.js'
-
+import {Overview} from './overview.js'
+import {Information} from './information.js'
 
 $(".nav li").removeClass("active");
 $('#my').addClass("active");
@@ -132,11 +133,11 @@ class App extends React.Component{
 					
 						<div className="panel panel-success">
 							<div className="panel-heading">
-								<h3 className="panel-title"> TODO : Overview </h3>
+								<h3 className="panel-title"> Overview </h3>
 							</div>
 							<div className="panel-body">
-								<div className="text">
-									Here you will see whether or not your consumption goes up, and in which proportions.
+								<div>
+									<Overview findYears={this.findYears}/>
 								</div>
 							</div>
 						</div>
@@ -168,17 +169,11 @@ class App extends React.Component{
 					<div className="col-sm-6 col-sm-push-6" >
 						<div className="panel panel-success">
 							<div className="panel-heading">
-								<h3 className="panel-title">TODO : Consumption's indicators</h3>
+								<h3 className="panel-title">Consumption's indicators</h3>
 							</div>
 							<div className="panel-body">
 								<div className="text">
-									Here you will see your :
-									<ul>
-										<li>average consumption of the month</li>
-										<li>total consumption of the month</li>
-										<li>max total consumption for days/months/year</li>
-										<li>...</li>
-									</ul>
+									<Information findYears={this.findYears}/>
 								</div>
 							</div>
 						</div>

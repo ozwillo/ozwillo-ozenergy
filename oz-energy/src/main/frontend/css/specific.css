@@ -327,3 +327,8 @@ fieldset[disabled] .btn-success.focus {
 .default-svg{
 	
 }
+
+.indicator{
+	font-size: 14px !important;
+	font-weight: bold;
+}
