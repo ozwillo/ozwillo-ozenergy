@@ -9,27 +9,27 @@ import '../../css/specific.css'
 import {Today} from './today.js'
 import {DataTable} from './datatable.js'
 import {LineChart} from './linechart.js'
-import {YourConsumption} from './yourconsumption.js'
+import {ConsumptionChoice} from './consumptionchoice.js'
 
 
 $(".nav li").removeClass("active");
-$('#my').addClass("active");
+$('#global').addClass("active");
 
 class App extends React.Component{
 	constructor(props) {
 		super(props);
 		this.state = {
 				agg: "By Day",
-				type: "Average",
+				city: "Paris", // TODO : remplace type par city et changer les fonctions (ex: unité : se référer aux notes, plus de type, ...)
 				energy: [],
-				measureUnit: "kWh",
+				measureUnit: "kW",
 				year: "Year",
 				start: 0,
 		};
 	}
 
 	componentWillMount() {
-		this.updateData(this.state.type, this.state.agg, "Year");
+		this.updateData(this.state.city, this.state.agg, "Year");
 		this.setParentStateStart(0);
 	}
 	
@@ -42,37 +42,32 @@ class App extends React.Component{
 		this.setState({start: e});
 	}
 	
-	setParentStateType = (e) => {
-		this.setState({type: e});
+	setParentStateCity = (e) => {
+		this.setState({city: e});
 		this.updateData(e, this.state.agg, "Year");
-		this.updateMeasureUnit(e, this.state.agg);
 		this.setParentStateStart(0);
 	}
 	
 	setParentStateAgg = (e) => {
 		this.setState({agg: e});
-		this.updateData(this.state.type, e, "Year");
-		this.updateMeasureUnit(this.state.type, e);
+		this.updateData(this.state.city, e, "Year");
 		this.setParentStateStart(0);
 	}
 	
-	endUri = (_type, _agg) => {
+	endUri = (_city, _agg) => {
 		var agg = (_agg === "By Day") ? "day"
 				: (_agg === "By Month") ? "month"
 				: (_agg === "By Year") ? "year"
 				: "day";
-		var type = (_type === "Average") ? "avg"
-				: (_type === "Cumulated") ? "sum"
-				: "avg";
-		return "/"+type+"/"+agg;
+		return "/"+_city+"/"+agg;
 	}
 	
-	updateData = (_type, _agg, _year) => {
-		var endUri = this.endUri(_type, _agg);
+	updateData = (_city, _agg, _year) => {
+		var endUri = this.endUri(_city, _agg);
 		var reactComponent = this;
 		var firstYear = "2011";
 		$.ajax({
-			url: "/api/my/conso/contract" + endUri,
+			url: "/api/my/conso/city" + endUri,
 			type: 'get',
 			dataType: 'json',
 			success: function (data) {
@@ -88,17 +83,6 @@ class App extends React.Component{
 		});
 	}
 	
-	updateMeasureUnit = (_type, _agg) => {
-			var unit = (_type === "Cumulated") ? "kW"
-					: (_type === "Average" && _agg === "By Day") ? "kWh"
-					: (_type === "Average" && _agg === "By Month") ? "kW/day"
-					: (_type === "Average" && _agg === "By Year") ? "kW/day"
-					: "kW";
-			this.setState({measureUnit: unit});
-	}
-	
-
-	
 	findYears = (energy) => {
 		var years = [];
 		energy.forEach(function(e) {
@@ -112,7 +96,7 @@ class App extends React.Component{
 	render() {
 		var energy = this.state.energy.slice(0);
 		var years = this.findYears(energy);
-		var consumptionTitle = "Individual energy's consumption (in " + this.state.measureUnit + ")";
+		var consumptionTitle = "Average of energy's consumption (in " + this.state.measureUnit + ")";
 		var agg = this.state.agg.slice(0);
   		return (
   			<div>
@@ -146,12 +130,12 @@ class App extends React.Component{
 					<div className="col-sm-8 col-sm-pull-4" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title"><YourConsumption title={consumptionTitle}
-				              		setParentStateType={this.setParentStateType} setParentStateAgg={this.setParentStateAgg}
-				              		type={this.state.type} agg={this.state.agg} /></h3>
+				              	<h3 className="panel-title"><ConsumptionChoice title={consumptionTitle}
+				              		setParentStateCity={this.setParentStateCity} setParentStateAgg={this.setParentStateAgg}
+				              		city={this.state.city} agg={this.state.agg} /></h3>
 				            </div>
 				            <div className="panel-body">
-								<LineChart energy={energy} type={this.state.type} agg={this.state.agg} 
+								<LineChart energy={energy} city={this.state.city} agg={this.state.agg} 
 								updateData ={this.updateData} setParentStateYear={this.setParentStateYear}
 								setParentStateStart={this.setParentStateStart} start={this.state.start}
 								years={years} year={this.state.year} />
@@ -187,9 +171,9 @@ class App extends React.Component{
 					<div className="col-sm-6 col-sm-pull-6" >
 						<div className="panel panel-success">
 				            <div className="panel-heading">
-				              	<h3 className="panel-title"><YourConsumption title="Your Data"
-				              		setParentStateType={this.setParentStateType} setParentStateAgg={this.setParentStateAgg}
-			              			type={this.state.type} agg={this.state.agg} /></h3>
+				              	<h3 className="panel-title"><ConsumptionChoice title="Data"
+				              		setParentStateCity={this.setParentStateCity} setParentStateAgg={this.setParentStateAgg}
+			              			city={this.state.city} agg={this.state.agg} /></h3>
 				            </div>
 				            <div className="panel-body">
 								<DataTable energy={this.state.energy} unit={this.state.measureUnit} agg={agg}/>

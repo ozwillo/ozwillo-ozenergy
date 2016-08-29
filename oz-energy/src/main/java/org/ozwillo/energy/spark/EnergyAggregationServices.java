@@ -39,11 +39,31 @@ public class EnergyAggregationServices {
 			    .setSparkHome("/home/charge/installations/spark-1.6.1-bin-hadoop2.6")
 			    .setAppResource(mavenRepository + 
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
-			    .setMainClass("Aggregations").addAppArgs("all").launch();
+			    .setMainClass("Aggregations").addAppArgs("all").addAppArgs("cities").launch();
 
 		System.out.println("Waiting for finish...");
 		int exitCode = spark.waitFor();
 		System.out.println(IOUtils.toString(spark.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
+	
+	
+	public void runCityAggregation(String city, String aggregation) throws IOException, InterruptedException{
+		Map env = new HashMap<String,String>();
+		env.put("JAVA_HOME", System.getProperty("java.home"));
+		Process spark = new SparkLauncher(env)
+			    .setSparkHome("/home/charge/installations/spark-1.6.1-bin-hadoop2.6")
+			    .setAppResource(mavenRepository + 
+			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
+			    .setMainClass("Aggregations")
+			    .addAppArgs("avg").addAppArgs(aggregation).addAppArgs("city").addAppArgs(city)
+			    .launch();
+
+		System.out.println("Waiting for finish...");
+		int exitCode = spark.waitFor();
+		System.out.println(IOUtils.toString(spark.getErrorStream()));
+		System.out.println("Finished! Exit code:" + exitCode);
+	}
+	
+	
 }
