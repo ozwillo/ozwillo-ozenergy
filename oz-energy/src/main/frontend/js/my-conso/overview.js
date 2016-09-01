@@ -66,7 +66,7 @@ export class Overview extends React.Component {
 		var lastMonth = consLastMonth.toString().slice(0,6) + " kW"
 		var percent = (consLastMonth - consBeforeLastMonth) / consBeforeLastMonth;
 		var msg = "";
-		var msg2 = "It reached " + consLastMonth + " kW last month.";
+		var msg2 = "It reached " + consLastMonth.toString().slice(0,7) + " kW last month.";
 		var percentMsg = "";
 		var img = "glyphicon glyphicon-triangle-top";
 		var img2 = "";

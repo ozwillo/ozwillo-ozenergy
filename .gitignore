@@ -23,6 +23,9 @@ target/
 bin/
 .cache-main
 
+#Netbeans
+.history
+
 # Spring
 .springBeans
 

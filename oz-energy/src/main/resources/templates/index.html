@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="includes/header"></head>
-<body>
+<body class="index-body">
 	<div data-th-replace="|includes/${user == null ? 'navigation' : 'my-navigation'}::nav|"></div>
 	<div data-th-replace="includes/scripts"></div> 
 	<div id="container" class="container"></div>	
@@ -11,4 +11,6 @@
 	<script type="text/javascript" src="./../index-bundle.js"></script>
 
 </body>
+
+<div data-th-replace="includes/footer"></div>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head data-th-replace="includes/header"></head>
-<body>
+<body class="conso-body">
 
 	<div data-th-replace="|includes/${user == null ? 'navigation' : 'my-navigation'}::nav|"></div>
 	<div data-th-replace="includes/scripts"></div> 
@@ -15,4 +15,5 @@
 	<script type="text/javascript" src="./../about-bundle.js"></script>
 
 </body>
+<div data-th-replace="includes/footer"></div>
 </html>

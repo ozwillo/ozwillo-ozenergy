@@ -1,0 +1,1 @@
+[Photo windpower.jpg](https://www.flickr.com/photos/jondaar/7851934266) by Jondaar_1 / [CC BY](https://creativecommons.org/licenses/by/2.0/)
