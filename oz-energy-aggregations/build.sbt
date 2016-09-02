@@ -24,6 +24,6 @@ lazy val app = (project in file(".")).
   ).
   settings(addArtifact(artifact in (Compile, assembly), assembly).settings: _*)
 
-publishTo := Some(Resolver.file("file",  new File("/home/charge"+"/.m2/repository/spark_aggregations")))
+publishTo := Some(Resolver.file("file",  new File(sys.env("HOME")+"/.m2/repository/spark_aggregations")))
 
 
