@@ -17,7 +17,7 @@ application:
   devmode: true
    
 kernel:
-  base_uri: https://kernel.ozwillo-preprod.eu
+  base_uri: https://accounts.ozwillo-preprod.eu
   alt_uri: ${kernel.base_uri}
   auth:
     issuer: ${kernel.base_uri}/
@@ -40,8 +40,15 @@ kernel:
   scopes_to_require: openid profile email address phone datacore
   maxUserMembershipsPerPage: 20
   
-#datacore:
-#  #url: 
+datacore:
+  #url: http://localhost:8080
+  url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
+  #url: https://plnm-dev-dc             # dev, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert :
+  # go to https://data.ozwillo-dev.eu, right click on lock, export certificate to plnm-dev-dc.cer,
+  # then import it and check :
+  # sudo keytool -import -alias plnm-dev-dc -keystore /usr/lib/jvm/jdk1.8.xx/jre/lib/security/cacerts -file plnm-dev-dc.cer
+  # keytool -list -v -keystore /usr/lib/jvm/jdk1.8.xx/jre/lib/security/cacerts
+  #url: https://data.ozwillo-dev.eu    # dev, doesn't work with current gen'd cert
 #  systemAdminUser: 
 #    refreshToken: changeit
 #    nonce: changeit      #Set it when getting the refreshToken

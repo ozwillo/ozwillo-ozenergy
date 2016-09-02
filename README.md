@@ -60,3 +60,5 @@ mvn spring-boot:run -DrunAggregation
 (remove the last parameter to avoid running Spark aggregations on startup in addition to nightly)
 
 Open [http://localhost:8080/](http://localhost:8080/) with your favorite browser.
+
+If devmode has been kept to true, various sample data will be displayed for users if they don't have their own energy consumption contract defined in the Datacore yet.
