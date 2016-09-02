@@ -47,4 +47,6 @@ kernel:
 #    nonce: changeit      #Set it when getting the refreshToken
 #  
 
-
+spark:
+  spark.home: ${SPARK_HOME}
+  #spark.home: ${HOME}/installations/spark-1.6.1-bin-hadoop2.6

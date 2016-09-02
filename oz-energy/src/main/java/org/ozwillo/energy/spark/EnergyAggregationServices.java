@@ -11,20 +11,23 @@ import org.apache.spark.launcher.SparkLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EnergyAggregationServices {
 
-	@Value("/home/charge/.m2/repository/spark_aggregations")
+	@Value("${HOME}/.m2/repository/spark_aggregations")
 	private String mavenRepository;
+	@Value("${spark.home}")
+	private String sparkHome;
 	
 	public EnergyAggregationServices() {
 		super();
-		this.mavenRepository = System.getProperty("user.home")+"/.m2/repository/spark_aggregations";
 	}
 	
 	@Autowired
 	@PostConstruct
-	@Scheduled(cron="0 0 0 1/1 * ? *") // Runs at midnight every day every month
+	@Scheduled(cron="0 0 1 * * *") // Runs at midnight every day every month
 	public void runAggregation() throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
@@ -36,7 +39,7 @@ public class EnergyAggregationServices {
 				 * Solved by setting environment
 				 */
 				//.setJavaHome("/home/charge/installations/jdk1.8.0_91")
-			    .setSparkHome("/home/charge/installations/spark-1.6.1-bin-hadoop2.6")
+			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository + 
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations").addAppArgs("all").addAppArgs("cities").launch();
@@ -48,11 +51,19 @@ public class EnergyAggregationServices {
 	}
 	
 	
+	/**
+	 * NOT USED YET
+	 * TODO finish it, and schedule it
+	 * @param city
+	 * @param aggregation
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void runCityAggregation(String city, String aggregation) throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
 		Process spark = new SparkLauncher(env)
-			    .setSparkHome("/home/charge/installations/spark-1.6.1-bin-hadoop2.6")
+			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository + 
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations")

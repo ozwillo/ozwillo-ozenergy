@@ -38,7 +38,9 @@ It will create a fat jar using sbt-assembly and publish it into your maven-repos
 cd oz-energy
 cp config/application.model.yml config/application.yml
 ```
-then adapt it as needed (such as setting credentials that are appropriate to the chosen target Ozwillo environment).
+then adapt it as needed, notably :
+- set spark.home if you haven't set the SPARK_HOME environment variable
+- set your application credentials (client_*) as appropriate for the chosen target Ozwillo environment
 
 * In the file ozwillo-ozenergy/oz-energy/src/main/java/org/ozwillo/energy/spark/EnergyAggregationServices.java, replace SparkHome value and mavenRepository by your own paths.
 

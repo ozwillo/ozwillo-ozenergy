@@ -1,7 +1,5 @@
 package org.ozwillo.energy.spark;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
 import org.junit.Test;
@@ -15,7 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(classes = OzEnergyApplication.class)
 public class SparkAggregationTests {
 
-	private EnergyAggregationServices service = new EnergyAggregationServices();
+   @Autowired
+	private EnergyAggregationServices service;
 	
 	@Test
 	public void launchSparkAggregation() throws IOException, InterruptedException {
