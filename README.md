@@ -1,6 +1,8 @@
 # ozwillo-ozenergy
 OzEnergy - energy consumption monitoring for consumers, providers and territories alike
 
+![Demo](https://github.com/ozwillo/ozwillo-ozenergy/blob/master/app-overview/oz-energy.gif)
+
 ## Prerequisites
 
 Building requires [**Java 8**](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [**Maven 3**](https://maven.apache.org/download.cgi), [**Node 6**](https://nodejs.org/en/download/releases/) (tested with v6.2.0 and v6.3.0), [**Scala 2.10** or later] (http://www.scala-lang.org/download/2.11.0.html) , [**sbt 0.13**](http://www.scala-sbt.org/0.13/docs/Setup.html) and [**Spark 1.6.1** (pre-built for Hadoop 2.6)](http://spark.apache.org/downloads.html).
