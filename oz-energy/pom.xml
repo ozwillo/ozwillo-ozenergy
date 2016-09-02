@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>oz-energy</name>
-	<description>Web application for energy'consumers and administrations</description>
+	<description>Web application for energy'consumers and public bodies</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -105,6 +105,17 @@
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-core_2.10</artifactId>
 		    <version>1.6.1</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<artifactId>slf4j-log4j12</artifactId>
+		    		<groupId>org.slf4j</groupId>
+		    	</exclusion><!-- else ExceptionInInitializerError: Detected both log4j-over-slf4j.jar AND bound slf4j-log4j12.jar on the class path, preempting StackOverflowError
+		    	http://stackoverflow.com/questions/38084257/detected-both-log4j-over-slf4j-jar-and-slf4j-log4j12-jar-on-the-class-path-pree -->
+		    	<exclusion>
+		    		<artifactId>javax.servlet</artifactId>
+		    		<groupId>org.eclipse.jetty.orbit</groupId>
+		    	</exclusion><!-- else conflict on javax.servlet http://stackoverflow.com/questions/37236626/spring-boot-and-apache-spark-security-exception-signer-mismatch -->
+		    </exclusions>
 		 </dependency>
         
 		 <!-- Jackson -->

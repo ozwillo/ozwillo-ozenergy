@@ -24,9 +24,15 @@ public class EnergyAggregationServices {
 	public EnergyAggregationServices() {
 		super();
 	}
+
+   @PostConstruct
+	public void init() throws IOException, InterruptedException {
+      String runAggregationString = System.getProperty("runAggregation");
+      if (runAggregationString != null && !"false".equals(runAggregationString)) {
+	      this.runAggregation();
+	   }
+	}
 	
-	@Autowired
-	@PostConstruct
 	@Scheduled(cron="0 0 1 * * *") // Runs at midnight every day every month
 	public void runAggregation() throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();

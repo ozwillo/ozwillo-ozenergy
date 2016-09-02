@@ -38,16 +38,16 @@ It will create a fat jar using sbt-assembly and publish it into your maven-repos
 cd oz-energy
 cp config/application.model.yml config/application.yml
 ```
-then adapt it as needed, notably :
-- set spark.home if you haven't set the SPARK_HOME environment variable
-- set your application credentials (client_*) as appropriate for the chosen target Ozwillo environment
+then adapt it as needed, notably set spark.home if you haven't set the SPARK_HOME environment variable.
+
+To put it in production, also set : (noauth)devmode props to false, kernel.base_uri and your application credentials (client_*) as appropriate for the chosen target Ozwillo environment, and application.url.
 
 * In the file ozwillo-ozenergy/oz-energy/src/main/java/org/ozwillo/energy/spark/EnergyAggregationServices.java, replace SparkHome value and mavenRepository by your own paths.
 
 * Then do (in the oz-energy subproject) : 
 
 ```
-mvn clean package 
+mvn clean package
 ```
 
 ## Running Oz'Energy 
@@ -55,7 +55,8 @@ mvn clean package
 Run Spring Boot :
 
 ```
-mvn spring-boot:run
+mvn spring-boot:run -DrunAggregation
 ```
+(remove the last parameter to avoid running Spark aggregations on startup in addition to nightly)
 
 Open [http://localhost:8080/](http://localhost:8080/) with your favorite browser.
