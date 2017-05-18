@@ -9,20 +9,39 @@ Building requires [**Java 8**](http://www.oracle.com/technetwork/java/javase/dow
 
 Running requires also [**MongoDB 2.6**](https://docs.mongodb.com/v2.6/installation/).
 
+In the end what you need to do is :
+
++ For the node installation, it is highly recommended to use NVM :
+
+``` bash
+sudo apt-get update
+sudo apt-get install build-essential libssl-dev
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+nvm install v6.2.0
+```
+
++ A priori, it is not necessary to install Scala separately, since sbt can install the most appropriate version itself. So go on the [**sbt 0.13**](http://www.scala-sbt.org/0.13/docs/Setup.html) link download it, and uncompress it somewhere convenient for you.
+
++ Java, Maven and MongoDB are to be installed through command line
+
+``` bash
+sudo apt-get install default-jre default-jdk maven mongodb
+```
+
++ You can extract the Spark archive in your home directory or anywhere, for that matter, but don't forget to add the $SPARK_HOME environment variable by adding at the end of your ~/.bashrc file : "export SPARK_HOME=<YOUR PATH TO THE EXTRACTED SPARK DIRECTORY>", for example : "export SPARK_HOME=/home/myself/Bureau/Demo/Softs/spark-1.6.1-bin-hadoop2.6".
+
 ## Installation
 
 * Before building the project, you need to clone and install the [Spring integration package](https://github.com/ozwillo/ozwillo-java-spring-integration) :
 
 ```
-git clone git@github.com:ozwillo/ozwillo-java-spring-integration.git
+git clone https://github.com/ozwillo/ozwillo-java-spring-integration.git
 cd ozwillo-java-spring-integration
 git checkout ozwillo-java-spring-integration-1.24
 ./gradlew install
 ```
 
 * Build oz-energy-aggregations subproject :
-
-First open the build.sbt file in the and replace [oz-energy-aggregations](https://github.com/ozwillo/ozwillo-ozenergy/tree/master/oz-energy-aggregations) subproject '/home/charge' by your own home directory.
 
 Then build the project :
 
@@ -38,19 +57,19 @@ It will create a fat jar using sbt-assembly and publish it into your maven-repos
 cd oz-energy
 cp config/application.model.yml config/application.yml
 ```
-then adapt it as needed, notably set spark.home if you haven't set the SPARK_HOME environment variable.
+then adapt it if you feel the need to, but it should be fine as is if you have set the SPARK_HOME environment variable as told above.
 
 To put it in production, also set : (noauth)devmode props to false, kernel.base_uri and your application credentials (client_*) as appropriate for the chosen target Ozwillo environment, and application.url.
 
 * In the file ozwillo-ozenergy/oz-energy/src/main/java/org/ozwillo/energy/spark/EnergyAggregationServices.java, replace SparkHome value and mavenRepository by your own paths.
 
-* Then do (in the oz-energy subproject) : 
+* Then do (in the oz-energy subproject) :
 
 ```
 mvn clean package
 ```
 
-## Running Oz'Energy 
+## Running Oz'Energy
 
 Run Spring Boot :
 
