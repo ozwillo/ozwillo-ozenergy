@@ -61,8 +61,6 @@ then adapt it if you feel the need to, but it should be fine as is if you have s
 
 To put it in production, also set : (noauth)devmode props to false, kernel.base_uri and your application credentials (client_*) as appropriate for the chosen target Ozwillo environment, and application.url.
 
-* In the file ozwillo-ozenergy/oz-energy/src/main/java/org/ozwillo/energy/spark/EnergyAggregationServices.java, replace SparkHome value and mavenRepository by your own paths.
-
 * Then do (in the oz-energy subproject) :
 
 ```
