@@ -16,12 +16,19 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
     : org.apache.spark.rdd.RDD[org.bson.Document] = {
     
     //get persid data from Mongo Datacore
-	  val readConfigPersid = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.org_1.persid:Identity_0?readPreference=secondaryPreferred", 
+	  val datacoreMongoIP: String = sc.getConf.get("datacoreMongoIP");
+	  val datacoreMongoId: String = sc.getConf.get("datacoreMongoId");
+	  
+	  val persidURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".org_1.persid:Identity_0?readPreference=secondaryPreferred";
+    
+	  val readConfigPersid = ReadConfig(Map("uri" -> persidURI, 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val persidRdd = MongoSpark.load(sc, readConfigPersid)
 	  
 	  //get contract data from Mongo Datacore
-  	val readConfigContract = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondaryPreferred", 
+	  val contractURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondaryPreferred";
+    
+  	val readConfigContract = ReadConfig(Map("uri" -> contractURI, 
   	    "partitioner" -> "MongoPaginateBySizePartitioner"))
   	val contractRdd = MongoSpark.load(sc, readConfigContract)
   	
@@ -65,7 +72,13 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
    */
   def avgByDayAndCity(sc: SparkContext, city: String) = {
     //get the results from sumByDayAndContract from the database
-    val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndContract", 
+    
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumDayAndContract";
+    
+    val readConfig = ReadConfig(Map("uri" -> aggregationURI, 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val resSum = MongoSpark.load(sc, readConfig)
     
@@ -75,7 +88,7 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgDayFor")).drop()})
 	  
 	  //Save
-	  res.saveToMongoDB(writeConfigCity(city, "avgDayFor"))
+	  res.saveToMongoDB(writeConfigCity(sc, city, "avgDayFor"))
   }
   
   /** Determines and saves the average of the daily consumption in a city
@@ -98,8 +111,13 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
    * @param city the city for which the aggregation is done
    */
   def avgByMonthAndCity(sc: SparkContext, city: String) = {
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumMonthAndContract";
+        
     //get the results from sumByDayAndContract from the database
-    val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumMonthAndContract", 
+    val readConfig = ReadConfig(Map("uri" -> aggregationURI, 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val resSum = MongoSpark.load(sc, readConfig)
     
@@ -108,7 +126,7 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  //Clear collection before saving
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgMonthFor")).drop()})
 	  //Save
-	  res.saveToMongoDB(writeConfigCity(city, "avgMonthFor"))
+	  res.saveToMongoDB(writeConfigCity(sc, city, "avgMonthFor"))
   }
   
   /** Determines and saves the average of the monthly consumption in a city
@@ -131,8 +149,13 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
    * @param city the city for which the aggregation is done
    */
   def avgByYearAndCity(sc: SparkContext, city: String) = {
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumYearAndContract";
+    
     //get the results from sumByDayAndContract from the database
-    val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumYearAndContract", 
+    val readConfig = ReadConfig(Map("uri" -> aggregationURI, 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val resSum = MongoSpark.load(sc, readConfig)
     
@@ -141,7 +164,7 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  //Clear collection before saving
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgYearFor")).drop()})
 	  //Save
-	  res.saveToMongoDB(writeConfigCity(city, "avgYearFor"))
+	  res.saveToMongoDB(writeConfigCity(sc, city, "avgYearFor"))
   }
   
   /** Determines and saves the average of the annual consumption in a city
