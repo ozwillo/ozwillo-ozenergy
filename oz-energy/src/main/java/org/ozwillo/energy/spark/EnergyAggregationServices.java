@@ -20,7 +20,7 @@ public class EnergyAggregationServices {
 	private String mavenRepository;
 	@Value("${spark.home}")
 	private String sparkHome;
-	
+
 	public EnergyAggregationServices() {
 		super();
 	}
@@ -32,31 +32,35 @@ public class EnergyAggregationServices {
 	      this.runAggregation();
 	   }
 	}
-	
+
 	@Scheduled(cron="0 0 1 * * *") // Runs at midnight every day every month
 	public void runAggregation() throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
+		/* Normally, you should set JAVA_HOME with
+		 * ".setJavaHome("/home/charge/installations/jdk1.8.0_91")", but it
+		 * doesn't work .
+		 * See http://apache-spark-developers-list.1001551.n3.nabble.com/
+		 * SparkLauncher-setJavaHome-does-not-set-JAVA-HOME-in-child-process-td14848.html
+		 *
+		 * Solved by setting environment
+		 */
 		Process spark = new SparkLauncher(env)
-				/* Normally, you should set JAVA_HOME the following way, but it doesn't work 
-				 * See http://apache-spark-developers-list.1001551.n3.nabble.com/
-				 * SparkLauncher-setJavaHome-does-not-set-JAVA-HOME-in-child-process-td14848.html
-				 * 
-				 * Solved by setting environment
-				 */
-				//.setJavaHome("/home/charge/installations/jdk1.8.0_91")
 			    .setSparkHome(sparkHome)
-			    .setAppResource(mavenRepository + 
+			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
-			    .setMainClass("Aggregations").addAppArgs("all").addAppArgs("cities").launch();
+			    .setMainClass("Aggregations")
+				.addAppArgs("all")
+				.addAppArgs("cities")
+				.launch();
 
 		System.out.println("Waiting for finish...");
 		int exitCode = spark.waitFor();
 		System.out.println(IOUtils.toString(spark.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
-	
-	
+
+
 	/**
 	 * NOT USED YET
 	 * TODO finish it, and schedule it
@@ -70,7 +74,7 @@ public class EnergyAggregationServices {
 		env.put("JAVA_HOME", System.getProperty("java.home"));
 		Process spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
-			    .setAppResource(mavenRepository + 
+			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations")
 			    .addAppArgs("avg").addAppArgs(aggregation).addAppArgs("city").addAppArgs(city)
@@ -81,6 +85,6 @@ public class EnergyAggregationServices {
 		System.out.println(IOUtils.toString(spark.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
-	
-	
+
+
 }
