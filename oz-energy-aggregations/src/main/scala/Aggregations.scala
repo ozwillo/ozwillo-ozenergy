@@ -21,7 +21,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		val aggregationMongoIP: String = "127.0.0.1"
 		val aggregationMongoId: String = "datacore1"
 
-		val inputUri: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercons:EnergyConsumption_0?readPrefe$
+		val inputUri: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
 		val outputUri: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgDayAndContract"
 
 		val conf = new SparkConf()
