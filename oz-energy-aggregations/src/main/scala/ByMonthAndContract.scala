@@ -18,8 +18,13 @@ trait ByMonthAndContract extends Util with SumByDayAndContract {
    * @return a spark rdd for the sum
    */
   def rddMonth(sc: SparkContext): org.apache.spark.rdd.RDD[((String, java.util.Date), (String, java.util.Date, Int, java.lang.Double))] = {
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumDayAndContract";
+    
     //For compatibility with MongoDB 2.6, don't use MongoDefaultPartitioner nor MongoSamplePartitioner
-  	val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndContract", 
+  	val readConfig = ReadConfig(Map("uri" -> aggregationURI, 
   	    "partitioner" -> "MongoPaginateBySizePartitioner"))
   	
   	val rdd = MongoSpark.load(sc, readConfig)
@@ -58,7 +63,12 @@ trait ByMonthAndContract extends Util with SumByDayAndContract {
   	//To have an empty output collection
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgMonthAndContract").drop()})
   	
-  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.avgMonthAndContract"))
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgMonthAndContract";
+	  
+  	val writeConfig = WriteConfig(Map("uri" -> aggregationURI))
   	res.saveToMongoDB(writeConfig)
   }
   
@@ -92,7 +102,12 @@ trait ByMonthAndContract extends Util with SumByDayAndContract {
   	//To have an empty output collection
   	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumMonthAndContract").drop()})
   	
-  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumMonthAndContract"))
+	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumMonthAndContract";
+  	
+  	val writeConfig = WriteConfig(Map("uri" -> aggregationURI))
   	res.saveToMongoDB(writeConfig)
   }
   

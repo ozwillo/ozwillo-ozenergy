@@ -18,15 +18,24 @@ trait City {
    */
   def getCities(sc: SparkContext): Array[String] = {
     //get geo data from Mongo Datacore
-  	val readConfigGeo = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.geo_1.geo:Area_0?readPreference=secondaryPreferred", "partitioner" -> "MongoPaginateBySizePartitioner"))
+	  val datacoreMongoIP: String = sc.getConf.get("datacoreMongoIP");
+	  val datacoreMongoId: String = sc.getConf.get("datacoreMongoId");
+	  
+	  val geoDataURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".geo_1.geo:Area_0?readPreference=secondaryPreferred";
+
+  	val readConfigGeo = ReadConfig(Map("uri" -> geoDataURI, "partitioner" -> "MongoPaginateBySizePartitioner"))
   	val geoRdd = MongoSpark.load(sc, readConfigGeo)
   	
   	//get persid data from Mongo Datacore
-  	val readConfigPersid = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.org_1.persid:Identity_0?readPreference=secondaryPreferred", "partitioner" -> "MongoPaginateBySizePartitioner"))
+	  val persIdURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".org_1.persid:Identity_0?readPreference=secondaryPreferred";
+
+  	val readConfigPersid = ReadConfig(Map("uri" -> persIdURI, "partitioner" -> "MongoPaginateBySizePartitioner"))
   	val persidRdd = MongoSpark.load(sc, readConfigPersid)
   	
   	//get contract data from Mongo Datacore
-  	val readConfigContract = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore.oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondaryPreferred", "partitioner" -> "MongoPaginateBySizePartitioner"))
+    val contractURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondaryPreferred";
+  	
+  	val readConfigContract = ReadConfig(Map("uri" -> contractURI, "partitioner" -> "MongoPaginateBySizePartitioner"))
   	val contractRdd = MongoSpark.load(sc, readConfigContract)
   	
   	

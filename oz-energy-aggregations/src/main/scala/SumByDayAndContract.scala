@@ -20,8 +20,12 @@ trait SumByDayAndContract extends Util with AvgByHourAndContract {
    * @param sc the context for Spark
    */
   def sumByDayAndContract(sc: SparkContext) = {
-    
-    val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumDayAndContract"))
+    val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURI: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumDayAndContract";
+  	
+    val writeConfig = WriteConfig(Map("uri" -> aggregationURI))
     //To have an empty output collection
 	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumDayAndContract").drop()})
 	
