@@ -50,10 +50,6 @@ sed -i 's/url\:\ https\:\/\/data.ozwillo-preprod.eu/\#url\:\ https\:\/\/data.ozw
 sed -i 's/\#url\:\ http\:\/\/localhost\:8080/url\:\ http\:\/\/ozwillo-datacore-1\:8088/g' config/application.yml
 mvn clean package -DskipTests
 
-# EXTRA
-mongod --fork --logpath /app/mongod.log --smallfiles
-mongorestore /root/20160819_ozenergy_datacore
-
 echo "-----------------------------------------"
 echo "# Clean up"
 echo "-----------------------------------------"

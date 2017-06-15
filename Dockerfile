@@ -8,7 +8,6 @@ MAINTAINER Marc Dutoo, marc.dutoo@smile.fr
 WORKDIR /app
 
 # Copy and execute the deployment script
-COPY faster/20160819_ozenergy_datacore /root/20160819_ozenergy_datacore
 ADD deploy.sh /tmp/deploy.sh
 RUN /bin/bash -C /tmp/deploy.sh
 
