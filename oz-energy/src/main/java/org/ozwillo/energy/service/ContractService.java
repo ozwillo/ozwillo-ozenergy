@@ -28,9 +28,23 @@ public class ContractService {
    private DatacoreClient datacore;
    @Value("${application.devmode:false}")
    private boolean devmode;
+   @Value("${application.security.noauthdevmode:false}")
+   private boolean noauthdevmode;
+
    
    public String getCurrentUserContract() {
-      String kernelUserEmail = userInfoService.currentUser().getEmail();
+	  String kernelUserEmail = null;
+	  try {
+		  kernelUserEmail = userInfoService.currentUser().getEmail();
+	  } catch (Exception e) {
+		  if (devmode && noauthdevmode) {
+			  logger.info("devmode && noauthdevmode activated - No user found : switching to default user jacques.colard@gmail.com");
+		  }
+		  else {
+			  logger.info("devmode or noauthdevmode not activated - No user found : returning no contract");
+			  return null;
+		  }
+	  }
       return getUserContractFromEmail(kernelUserEmail);
    }
    
@@ -38,6 +52,7 @@ public class ContractService {
       if (email == null) {
          // noauthdevmode, return default
          // (otherwise this page can't be reached unless logged in)
+    	 // This contract is associated with "jacques.colard@gmail.com"
          return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
       }
       
