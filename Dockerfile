@@ -11,7 +11,9 @@ WORKDIR /app
 ADD deploy.sh /tmp/deploy.sh
 RUN /bin/bash -C /tmp/deploy.sh
 
-# Make port 8080 (http) available to the world outside this container
+# Make port 8080 (http) available to the world outside this container, for app
+EXPOSE 8080
+# Make port 8000 (http) available to the world outside this container, for jdpa debug
 EXPOSE 8080
 
 # Copy and set the start script for when the container launches

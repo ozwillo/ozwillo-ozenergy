@@ -16,4 +16,4 @@ export SPARK_MASTER_WEBUI_PORT=16160
 # Start mongod and OzEnergy
 mongod --fork --logpath /app/mongod.log --smallfiles
 cd /app/ozwillo-ozenergy/oz-energy
-mvn spring-boot:run -DrunAggregation > /app/ozenergy.log
+mvn spring-boot:run -DrunAggregation -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" > /app/ozenergy.log
