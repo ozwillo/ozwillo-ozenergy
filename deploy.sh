@@ -40,10 +40,10 @@ cd /app
 git clone https://github.com/xia0ben/ozwillo-ozenergy.git
 rm -rf /app/ozwillo-ozenergy/app-overview
 rm -rf /app/ozwillo-ozenergy/ozwillo-ozenergy-data
+sed -i 's/val datacoreMongoIP: String = "127.0.0.1"/val datacoreMongoIP: String = "ozwillo-mongo-3"/g' /app/ozwillo-ozenergy/oz-energy-aggregations/src/main/scala/Aggregations.scala
 cd /app/ozwillo-ozenergy/oz-energy-aggregations
 sbt publish
 cd /app/ozwillo-ozenergy/oz-energy
-sed -i 's/val datacoreMongoIP: String = "127.0.0.1"/val datacoreMongoIP: String = "ozwillo-mongo-3"/g' /app/ozwillo-ozenergy/oz-energy-aggregations/src/main/scala/Aggregations.scala
 # Change OzEnergy config file
 cp config/application.model.yml config/application.yml
 sed -i 's/url\:\ https\:\/\/data.ozwillo-preprod.eu/\#url\:\ https\:\/\/data.ozwillo-preprod.eu/g' config/application.yml
