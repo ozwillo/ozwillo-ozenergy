@@ -12,103 +12,204 @@ import org.apache.log4j.{Level, Logger}
 
 object Aggregations extends Serializable with AvgByDayAndContract with AvgByCity
 with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContract {
+	val usage = """
+      Usage is :
+        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type all [--all-cities]
+        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension contract
+        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension city --city Lyon
+        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type sum --groupBy-time day/month/year --groupBy-otherDimension contract
+    """
+
 	def main(args: Array[String]) {
-
-		val arg0 = args.headOption.getOrElse("none")
-
-		val datacoreMongoIP: String = "127.0.0.1"
-		val datacoreMongoId: String = "datacore"
-		val aggregationMongoIP: String = "127.0.0.1"
-		val aggregationMongoId: String = "datacore1"
-
-		val inputUri: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
-		val outputUri: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgDayAndContract"
-
-		val conf = new SparkConf()
-			  .setAppName("Aggregations")
-			  .set("spark.app.id", "Aggregations")
-			  .set("spark.mongodb.input.uri", inputUri)
-			  .set("spark.mongodb.output.uri", outputUri)
-			  .set("datacoreMongoIP", datacoreMongoIP)
-			  .set("datacoreMongoId", datacoreMongoId)
-			  .set("aggregationMongoIP", aggregationMongoIP)
-			  .set("aggregationMongoId", aggregationMongoId)
-		val sc = new SparkContext(conf)
-
 		// To avoid displaying to much information
 		val rootLogger = Logger.getRootLogger()
 	    rootLogger.setLevel(Level.ERROR)
 
-	    /** Prints message in case of bad argument(s) */
-	    def badArgs() = {
-	      println("----------------------------------------")
-	  	  println("Bad argument(s)")
-	  	  println("----------------------------------------")
-		  }
+    // ----------- BEGIN -----------
+		// Arguments to Options map
+    // -----------------------------
+		if (args.length == 0) rootLogger.error(usage)
+    val arglist = args.toList
+    type OptionMap = Map[Symbol, String]
 
-		  /** Executes the aggregations according to the given arguments */
-
-		  if (args.length == 0) {
-		    println("----------------------------------------")
-	  	  println("No argument")
-	  	  println("----------------------------------------")
-		  } else if (args(0) == "all") {
-	  	  avgByDayAndContract(sc)
-	  	  sumByDayAndContract(sc)
-	  	  avgByMonthAndContract(sc)
-	  	  sumByMonthAndContract(sc)
-	  	  avgByYearAndContractPerDay(sc)
-	  	  sumByYearAndContract(sc)
-	  	  if (args.length > 1 && args(1) == "cities") {
-	    	  val cities = getCities(sc)
-	    	  for (city <- cities) {
-	    	    avgByDayAndCity(sc, city)
-	    	    avgByMonthAndCity(sc, city)
-	    	  }
-	  	  } else {
-	  	    avgByDayAndCity(sc, "Paris")
-	  	    avgByDayAndCity(sc, "Lyon")
-	  	    avgByMonthAndCity(sc, "Paris")
-	  	    avgByMonthAndCity(sc, "Lyon")
-	  	    avgByYearAndCity(sc, "Paris")
-	  	    avgByYearAndCity(sc, "Lyon")
-	  	  }
-
-	  	} else if (args(0) == "avg") {
-	  	  if (args.length < 3) {
-	    	  badArgs()
-	  	  } else if (args(1) == "day" && args(2)=="Contract") {
-	  	    avgByDayAndContract(sc)
-	  	  } else if (args(2) == "city") {
-	  	    if (args.length < 4) {
-	  	      badArgs()
-	  	    } else if (args(1) == "day") {
-	  	      avgByDayAndCityFromScratch(sc, args(3))
-	  	    } else if (args(1) == "month") {
-	  	      avgByMonthAndCityFromScratch(sc, args(3))
-	  	    } else if (args(1) == "year") {
-	  	      avgByYearAndCityFromScratch(sc, args(3))
-	  	    }
-	  	  } else if (args(1) == "month" && args(2) == "Contract") {
-	  	    avgByMonthAndContractFromScratch(sc)
-	  	  } else if (args(1) == "year" && args(2) == "Contract") {
-	  	    avgByYearAndContractPerDayFromScratch(sc)
-	  	  } else {
-	  	    //nothing
-	  	  }
-
-	  	} else if (args(0) == "sum") {
-	  	  if (args.length < 3) {
-	    	  badArgs()
-	  	  } else if (args(1) == "day" && args(2) == "Contract") {
-	  	    sumByDayAndContract(sc)
-	  	  } else if (args(1) == "month" && args(2) == "Contract") {
-	  	    sumByMonthAndContractFromScratch(sc)
-	  	  } else if (args(1) == "year" && args(2) == "Contract") {
-	  	    sumByYearAndContractFromScratch(sc)
-	  	  }
-		  } else {
+		// Transform command in option map, easier to read
+    def nextOption(map : OptionMap, list: List[String]) : OptionMap = {
+      def isSwitch(s : String) = (s(0) == '-')
+      list match {
+        case Nil => map // Stop condition : when end of command is reached, return the option map
+        case "--aggregation-type" :: value :: tail =>
+                               nextOption(map ++ Map('aggregationType -> value), tail)
+        case "--all-cities" :: tail =>
+                               nextOption(map ++ Map('allCities -> "true"), tail)
+        case "--groupBy-time" :: value :: tail =>
+                               nextOption(map ++ Map('groupByTime -> value), tail)
+        case "--groupBy-otherDimension" :: value :: tail =>
+                               nextOption(map ++ Map('groupByOtherDimension -> value), tail)
+        case "--city" :: value :: tail =>
+                               nextOption(map ++ Map('city -> value), tail)
+        case "--datacore-mongo-IP" :: value :: tail =>
+                               nextOption(map ++ Map('datacoreMongoIP -> value), tail)
+        case "--datacore-mongo-id" :: value :: tail =>
+                               nextOption(map ++ Map('datacoreMongoId -> value), tail)
+        case "--aggregation-mongo-IP" :: value :: tail =>
+                               nextOption(map ++ Map('aggregationMongoIP -> value), tail)
+        case "--aggregation-mongo-id" :: value :: tail =>
+                               nextOption(map ++ Map('aggregationMongoId -> value), tail)
+        case option :: tail => rootLogger.error("Unknown option " + option)
+                               exit(1)
+      }
+    }
+    val options = nextOption(Map(),arglist)
+    // ------------ END ------------
+		// Arguments to Options map
+    // -----------------------------
+    
+    // ----------- BEGIN -----------
+		// Options coherence check
+    // -----------------------------    
+    /** Prints message in case of bad argument(s) */
+    def badArgs() = {
+  	  rootLogger.error("Bad argument(s)")
+      rootLogger.error(usage)
+      exit(1)
+	  }
+	  
+    // If no args -> Error
+		if (options.isEmpty) {
+		  badArgs()
+		}
+		else {
+		  // If no mention of datacore and aggregation dbs, or if no aggregation type -> Error
+		  if (!(options.contains('datacoreMongoIP) && options.contains('datacoreMongoId)
+		      && options.contains('aggregationMongoIP) && options.contains('aggregationMongoId)
+		      && options.contains('aggregationType))) {
 		    badArgs()
-	  	}
+		  }
+		  else {
+		    if (options('aggregationType) == "all") {
+		      // If try to mention groupby or city when all aggregations -> Error
+		      if (options.contains('groupByTime) || options.contains('groupByOtherDimension)
+		          || options.contains('city)) {
+		        badArgs()
+		      }
+		    }
+		    else if (options('aggregationType) == "avg") {
+		      // If try specific aggregation type without groupby -> Error
+		      if (!(options.contains('groupByTime) && options.contains('groupByOtherDimension))) {
+		        badArgs()
+		      }
+		      // If try groupByTime isn't of an authorized type -> Error
+		      else if (!(options('groupByTime) == "day" || options('groupByTime) == "month"
+		          || options('groupByTime) == "year")) {
+		        badArgs()
+		      }
+		      // If try groupByOtherDimension isn't of an authorized type -> Error
+		      else if (!(options('groupByOtherDimension) == "city" || options('groupByOtherDimension) == "contract")) {
+		        badArgs()
+		      }
+		      // If we want to group by city but no city is specified
+		      else if (options('groupByOtherDimension) == "city" && !options.contains('city)) {
+		        badArgs()
+		      }
+		    }
+		    else if (options('aggregationType) == "sum") {
+		      // If try specific aggregation type without groupby -> Error
+		      if (!(options.contains('groupByTime) && options.contains('groupByOtherDimension))) {
+		        badArgs()
+		      }
+		      // If try groupByTime isn't of an authorized type -> Error
+		      else if (!(options('groupByTime) == "day" || options('groupByTime) == "month"
+		          || options('groupByTime) == "year")) {
+		        badArgs()
+		      }
+		      // If try groupByOtherDimension isn't of an authorized type -> Error
+		      else if (!(options('groupByOtherDimension) == "contract")) {
+		        badArgs()
+		      }
+		      // If try to mention city -> Error
+		      else if (options.contains('city)) {
+		        badArgs()
+		      }
+		    }
+		  }
+		}		
+    // ------------ END ------------
+		// Options coherence check
+    // -----------------------------
+
+    // ----------- BEGIN -----------
+		// Spark config
+    // -----------------------------		
+		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
+    val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
+
+		val conf = new SparkConf()
+		  .setAppName("Aggregations")
+		  .set("spark.app.id", "Aggregations")
+		  .set("spark.mongodb.input.uri", inputUri)
+		  .set("spark.mongodb.output.uri", outputUri)
+		  .set("datacoreMongoIP", options('datacoreMongoIP))
+		  .set("datacoreMongoId", options('datacoreMongoId))
+		  .set("aggregationMongoIP", options('aggregationMongoIP))
+		  .set("aggregationMongoId", options('aggregationMongoId))
+		val sc = new SparkContext(conf)		
+    // ------------ END ------------
+		// Spark config
+    // -----------------------------
+
+    // ----------- BEGIN -----------
+		// Aggregation execution
+    // -----------------------------
+	  if (options('aggregationType) == "all") {
+  	  avgByDayAndContract(sc)
+  	  sumByDayAndContract(sc)
+  	  avgByMonthAndContract(sc)
+  	  sumByMonthAndContract(sc)
+  	  avgByYearAndContractPerDay(sc)
+  	  sumByYearAndContract(sc)
+  	  if (options('allCities) == "true") {
+    	  val cities = getCities(sc)
+    	  for (city <- cities) {
+    	    avgByDayAndCity(sc, city)
+    	    avgByMonthAndCity(sc, city)
+    	  }
+  	  } else {
+  	    avgByDayAndCity(sc, "Paris")
+  	    avgByDayAndCity(sc, "Lyon")
+  	    avgByMonthAndCity(sc, "Paris")
+  	    avgByMonthAndCity(sc, "Lyon")
+  	    avgByYearAndCity(sc, "Paris")
+  	    avgByYearAndCity(sc, "Lyon")
+  	  }
+  	}
+	  else if (options('aggregationType) == "avg") {
+  	  if (options('groupByTime) == "day" && options('groupByOtherDimension) == "contract") {
+  	    avgByDayAndContract(sc)
+  	  } else if (options('groupByOtherDimension) == "city") {
+        if (options('groupByTime) == "day") {
+  	      avgByDayAndCityFromScratch(sc, options('city))
+  	    } else if (options('groupByTime) == "month") {
+  	      avgByMonthAndCityFromScratch(sc, options('city))
+  	    } else if (options('groupByTime) == "year") {
+  	      avgByYearAndCityFromScratch(sc, options('city))
+  	    }
+  	  } else if (options('groupByTime) == "month" && options('groupByOtherDimension) == "contract") {
+  	    avgByMonthAndContractFromScratch(sc)
+  	  } else if (options('groupByTime) == "year" && options('groupByOtherDimension) == "contract") {
+  	    avgByYearAndContractPerDayFromScratch(sc)
+  	  }
+  	}
+	  else if (options('aggregationType) == "sum") {
+  	  if (options('groupByTime) == "day" && options('groupByOtherDimension) == "contract") {
+  	    sumByDayAndContract(sc)
+  	  } else if (options('groupByTime) == "month" && options('groupByOtherDimension) == "contract") {
+  	    sumByMonthAndContractFromScratch(sc)
+  	  } else if (options('groupByTime) == "year" && options('groupByOtherDimension) == "contract") {
+  	    sumByYearAndContractFromScratch(sc)
+  	  }
+	  }
+    // ----------- END -----------
+		// Aggregation execution
+    // -----------------------------
 	}
 }

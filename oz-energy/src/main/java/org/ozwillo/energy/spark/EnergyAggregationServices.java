@@ -20,6 +20,15 @@ public class EnergyAggregationServices {
 	private String mavenRepository;
 	@Value("${spark.home}")
 	private String sparkHome;
+	
+	@Value("${datacore.data.mongodb.host}")
+	private String datacoreMongoIP;
+	@Value("${datacore.data.mongodb.database}")
+	private String datacoreMongoId;
+	@Value("${spring.data.mongodb.host}")
+	private String aggregationMongoIP;
+	@Value("${spring.data.mongodb.database}")
+	private String aggregationMongoId;
 
 	public EnergyAggregationServices() {
 		super();
@@ -45,16 +54,28 @@ public class EnergyAggregationServices {
 		 *
 		 * Solved by setting environment
 		 */
+		String appArgs = "--datacore-mongo-IP"
+				+ " " + datacoreMongoIP + " "
+				+ "--datacore-mongo-id"
+				+ " " + datacoreMongoId + " "
+				+ "--aggregation-mongo-IP"
+				+ " " + aggregationMongoIP + " "
+				+ "--aggregation-mongo-id"
+				+ " " + aggregationMongoId + " "
+				+ "--aggregation-type"
+				+ " " + "all" + " "
+				+ "--all-cities";
+		System.out.println("Command args are : " + appArgs);
+		
 		Process spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations")
-				.addAppArgs("all")
-				.addAppArgs("cities")
+				.addAppArgs(appArgs)
 				.launch();
-
-		System.out.println("Waiting for finish...");
+		
+		System.out.println("Waiting for aggregation of all data to finish...");
 		int exitCode = spark.waitFor();
 		System.out.println(IOUtils.toString(spark.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
@@ -65,22 +86,40 @@ public class EnergyAggregationServices {
 	 * NOT USED YET
 	 * TODO finish it, and schedule it
 	 * @param city
-	 * @param aggregation
+	 * @param timeMeasure
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	public void runCityAggregation(String city, String aggregation) throws IOException, InterruptedException{
+	public void runCityAggregation(String city, String timeMeasure) throws IOException, InterruptedException{
 		Map env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
+		String appArgs = "--datacore-mongo-IP"
+				+ " " + datacoreMongoIP + " "
+				+ "--datacore-mongo-id"
+				+ " " + datacoreMongoId + " "
+				+ "--aggregation-mongo-IP"
+				+ " " + aggregationMongoIP + " "
+				+ "--aggregation-mongo-id"
+				+ " " + aggregationMongoId + " "
+				+ "--aggregation-type"
+				+ " " + "avg" + " "
+				+ "--groupBy-time"
+				+ " " + timeMeasure + " "
+				+ "--groupBy-otherDimension"
+				+ " " + "city" + " "
+				+ "--city"
+				+ " " + city;
+		System.out.println("Command args are : " + appArgs);
+		
 		Process spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations")
-			    .addAppArgs("avg").addAppArgs(aggregation).addAppArgs("city").addAppArgs(city)
+			    .addAppArgs(appArgs)
 			    .launch();
 
-		System.out.println("Waiting for finish...");
+		System.out.println("Waiting for city aggregation to finish...");
 		int exitCode = spark.waitFor();
 		System.out.println(IOUtils.toString(spark.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
