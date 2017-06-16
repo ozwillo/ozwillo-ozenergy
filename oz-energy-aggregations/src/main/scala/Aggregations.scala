@@ -28,7 +28,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Arguments to Options map
     // -----------------------------
-		if (args.length == 0) rootLogger.error(usage)
+		if (args.length == 0) println(usage)
     val arglist = args.toList
     type OptionMap = Map[Symbol, String]
 
@@ -55,7 +55,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
                                nextOption(map ++ Map('aggregationMongoIP -> value), tail)
         case "--aggregation-mongo-id" :: value :: tail =>
                                nextOption(map ++ Map('aggregationMongoId -> value), tail)
-        case option :: tail => rootLogger.error("Unknown option " + option)
+        case option :: tail => println("Unknown option " + option)
                                exit(1)
       }
     }
@@ -69,8 +69,8 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // -----------------------------    
     /** Prints message in case of bad argument(s) */
     def badArgs() = {
-  	  rootLogger.error("Bad argument(s)")
-      rootLogger.error(usage)
+  	  println("Bad argument(s)")
+      println(usage)
       exit(1)
 	  }
 	  
