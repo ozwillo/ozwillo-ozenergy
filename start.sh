@@ -13,7 +13,9 @@ export SPARK_MASTER_IP=localhost
 export SPARK_MASTER_PORT=7077
 export SPARK_MASTER_WEBUI_PORT=16160
 
+export MAVEN_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n" 
+
 # Start mongod and OzEnergy
 mongod --fork --logpath /app/mongod.log --smallfiles
 cd /app/ozwillo-ozenergy/oz-energy
-mvn spring-boot:run -DrunAggregation -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" > /app/ozenergy.log
+mvn spring-boot:run -DrunAggregation > /app/ozenergy.log

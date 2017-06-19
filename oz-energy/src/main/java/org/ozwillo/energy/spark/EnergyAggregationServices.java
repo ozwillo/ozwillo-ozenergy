@@ -34,7 +34,7 @@ public class EnergyAggregationServices {
 		super();
 	}
 
-   @PostConstruct
+    @PostConstruct
 	public void init() throws IOException, InterruptedException {
       String runAggregationString = System.getProperty("runAggregation");
       if (runAggregationString != null && !"false".equals(runAggregationString)) {
@@ -44,7 +44,7 @@ public class EnergyAggregationServices {
 
 	@Scheduled(cron="0 0 1 * * *") // Runs at midnight every day every month
 	public void runAggregation() throws IOException, InterruptedException{
-		Map env = new HashMap<String,String>();
+		Map<String,String> env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
 		/* Normally, you should set JAVA_HOME with
 		 * ".setJavaHome("/home/charge/installations/jdk1.8.0_91")", but it
