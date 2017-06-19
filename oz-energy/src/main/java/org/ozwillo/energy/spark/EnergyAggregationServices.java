@@ -1,14 +1,16 @@
 package org.ozwillo.energy.spark;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.launcher.SparkLauncher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -54,30 +56,32 @@ public class EnergyAggregationServices {
 		 *
 		 * Solved by setting environment
 		 */
-		String appArgs = "--datacore-mongo-IP"
-				+ " " + datacoreMongoIP + " "
-				+ "--datacore-mongo-id"
-				+ " " + datacoreMongoId + " "
-				+ "--aggregation-mongo-IP"
-				+ " " + aggregationMongoIP + " "
-				+ "--aggregation-mongo-id"
-				+ " " + aggregationMongoId + " "
-				+ "--aggregation-type"
-				+ " " + "all" + " "
-				+ "--all-cities";
-		System.out.println("Command args are : " + appArgs);
+		List<String> appArgs = Arrays.asList(
+				"--datacore-mongo-IP", datacoreMongoIP,
+				"--datacore-mongo-id", datacoreMongoId,
+				"--aggregation-mongo-IP", aggregationMongoIP,
+				"--aggregation-mongo-id", aggregationMongoId,
+				"--aggregation-type", "all",
+				"--all-cities");
+
+		System.out.println("Command args are : " + appArgs.toString());
 		
-		Process spark = new SparkLauncher(env)
+		SparkLauncher spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
-			    .setMainClass("Aggregations")
-				.addAppArgs(appArgs)
-				.launch();
+			    .setMainClass("Aggregations");
+			    
+		Iterator<String> argsIterator = appArgs.iterator();
+		while (argsIterator.hasNext()) {
+			spark.addAppArgs(argsIterator.next());
+		}		
+		
+		Process sparkProcess = spark.launch();
 		
 		System.out.println("Waiting for aggregation of all data to finish...");
-		int exitCode = spark.waitFor();
-		System.out.println(IOUtils.toString(spark.getErrorStream()));
+		int exitCode = sparkProcess.waitFor();
+		System.out.println(IOUtils.toString(sparkProcess.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
 
@@ -91,37 +95,36 @@ public class EnergyAggregationServices {
 	 * @throws InterruptedException
 	 */
 	public void runCityAggregation(String city, String timeMeasure) throws IOException, InterruptedException{
-		Map env = new HashMap<String,String>();
+		Map<String, String> env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
-		String appArgs = "--datacore-mongo-IP"
-				+ " " + datacoreMongoIP + " "
-				+ "--datacore-mongo-id"
-				+ " " + datacoreMongoId + " "
-				+ "--aggregation-mongo-IP"
-				+ " " + aggregationMongoIP + " "
-				+ "--aggregation-mongo-id"
-				+ " " + aggregationMongoId + " "
-				+ "--aggregation-type"
-				+ " " + "avg" + " "
-				+ "--groupBy-time"
-				+ " " + timeMeasure + " "
-				+ "--groupBy-otherDimension"
-				+ " " + "city" + " "
-				+ "--city"
-				+ " " + city;
-		System.out.println("Command args are : " + appArgs);
+		List<String> appArgs = Arrays.asList(
+				"--datacore-mongo-IP", datacoreMongoIP,
+				"--datacore-mongo-id", datacoreMongoId,
+				"--aggregation-mongo-IP", aggregationMongoIP,
+				"--aggregation-mongo-id", aggregationMongoId,
+				"--aggregation-type", "avg",
+				"--groupBy-time", timeMeasure,
+				"--groupBy-otherDimension", "city",
+				"--city", city);
+
+		System.out.println("Command args are : " + appArgs.toString());
 		
-		Process spark = new SparkLauncher(env)
+		SparkLauncher spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
-			    .setMainClass("Aggregations")
-			    .addAppArgs(appArgs)
-			    .launch();
+			    .setMainClass("Aggregations");
+			    
+		Iterator<String> argsIterator = appArgs.iterator();
+		while (argsIterator.hasNext()) {
+			spark.addAppArgs(argsIterator.next());
+		}
 
+		Process sparkProcess = spark.launch();
+		
 		System.out.println("Waiting for city aggregation to finish...");
-		int exitCode = spark.waitFor();
-		System.out.println(IOUtils.toString(spark.getErrorStream()));
+		int exitCode = sparkProcess.waitFor();
+		System.out.println(IOUtils.toString(sparkProcess.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
 
