@@ -34,7 +34,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     val fa: FileAppender = new FileAppender();
 		val pl: PatternLayout = new PatternLayout("%d %-5p [%c{1}] %m%n");
     fa.setName("FileLogger");
-    fa.setFile("mylog.log");    
+    fa.setFile("aggregations.log");
     fa.setLayout(pl);
     fa.setThreshold(Level.DEBUG);
     fa.setAppend(true);
@@ -171,7 +171,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Spark config
     // -----------------------------		
-		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
+		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?slaveOk=true"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
     val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
     
 		val conf = new SparkConf()
