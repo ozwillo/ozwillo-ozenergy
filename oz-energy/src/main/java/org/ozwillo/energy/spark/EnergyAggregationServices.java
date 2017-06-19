@@ -35,7 +35,13 @@ public class EnergyAggregationServices {
 	public EnergyAggregationServices() {
 		super();
 	}
-
+	
+	/**
+	 * Executes the runAggregation method on startup if the -DrunAggregation parameter
+	 * is given to Maven.
+	 * @throws IOException exception eventually thrown by the spark process
+	 * @throws InterruptedException exception eventually thrown by the spark process
+	 */
     @PostConstruct
 	public void init() throws IOException, InterruptedException {
       String runAggregationString = System.getProperty("runAggregation");
@@ -43,8 +49,17 @@ public class EnergyAggregationServices {
 	      this.runAggregation();
 	   }
 	}
-
-	@Scheduled(cron="0 0 1 * * *") // Runs at midnight every day every month
+    
+	/**
+	 * Runs all the energy consumption aggregations, be it grouped by city or contract
+	 * and time measure.
+	 * Scheduled to run at midnight every day every month.
+	 * @param city the city for which to run the data aggregation
+	 * @param timeMeasure the time measure to use for the groupBy clause
+	 * @throws IOException exception eventually thrown by the spark process
+	 * @throws InterruptedException exception eventually thrown by the spark process
+	 */
+	@Scheduled(cron="0 0 1 * * *")
 	public void runAggregation() throws IOException, InterruptedException{
 		Map<String,String> env = new HashMap<String,String>();
 		env.put("JAVA_HOME", System.getProperty("java.home"));
@@ -87,12 +102,12 @@ public class EnergyAggregationServices {
 
 
 	/**
-	 * NOT USED YET
-	 * TODO finish it, and schedule it
-	 * @param city
-	 * @param timeMeasure
-	 * @throws IOException
-	 * @throws InterruptedException
+	 * Runs the energy consumption average aggregation for a given city grouped by a given time measure.
+	 * TODO Schedule it
+	 * @param city the city for which to run the data aggregation
+	 * @param timeMeasure the time measure to use for the groupBy clause
+	 * @throws IOException exception eventually thrown by the spark process
+	 * @throws InterruptedException exception eventually thrown by the spark process
 	 */
 	public void runCityAggregation(String city, String timeMeasure) throws IOException, InterruptedException{
 		Map<String, String> env = new HashMap<String,String>();
@@ -127,6 +142,4 @@ public class EnergyAggregationServices {
 		System.out.println(IOUtils.toString(sparkProcess.getErrorStream()));
 		System.out.println("Finished! Exit code:" + exitCode);
 	}
-
-
 }
