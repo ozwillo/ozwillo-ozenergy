@@ -24,7 +24,7 @@ git checkout ozwillo-java-spring-integration-1.24
 ./gradlew install
 
 echo "-----------------------------------------"
-echo "# Get Spark and set related ENV variable"
+echo "# Get Spark"
 echo "-----------------------------------------"
 cd /root
 wget --quiet https://d3kbcqa49mib13.cloudfront.net/spark-1.6.1-bin-hadoop2.6.tgz

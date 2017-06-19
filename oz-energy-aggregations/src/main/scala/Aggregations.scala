@@ -10,6 +10,12 @@ import org.bson.Document
 
 import org.apache.log4j.{Level, Logger}
 
+import java.io._
+import org.apache.log4j.Appender
+import org.apache.log4j.FileAppender
+import java.util.regex.Pattern
+import org.apache.log4j.PatternLayout
+
 object Aggregations extends Serializable with AvgByDayAndContract with AvgByCity
 with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContract {
 	val usage = """
@@ -23,12 +29,24 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 	def main(args: Array[String]) {
 		// To avoid displaying to much information
 		val rootLogger = Logger.getRootLogger()
-	    rootLogger.setLevel(Level.ERROR)
-
+    rootLogger.setLevel(Level.DEBUG)
+  
+    val fa: FileAppender = new FileAppender();
+		val pl: PatternLayout = new PatternLayout("%d %-5p [%c{1}] %m%n");
+    fa.setName("FileLogger");
+    fa.setFile("mylog.log");    
+    fa.setLayout(pl);
+    fa.setThreshold(Level.DEBUG);
+    fa.setAppend(true);
+    fa.activateOptions();
+    
+    Logger.getRootLogger().addAppender(fa);
+    
+    rootLogger.debug("Aggregations Logger is up and running.");
+    
     // ----------- BEGIN -----------
 		// Arguments to Options map
     // -----------------------------
-		if (args.length == 0) println(usage)
     val arglist = args.toList
     type OptionMap = Map[Symbol, String]
 
@@ -55,11 +73,13 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
                                nextOption(map ++ Map('aggregationMongoIP -> value), tail)
         case "--aggregation-mongo-id" :: value :: tail =>
                                nextOption(map ++ Map('aggregationMongoId -> value), tail)
-        case option :: tail => println("Unknown option " + option)
+        case option :: tail => rootLogger.error("Unknown option " + option)
                                exit(1)
       }
     }
     val options = nextOption(Map(),arglist)
+    
+    rootLogger.debug(options.toString());
     // ------------ END ------------
 		// Arguments to Options map
     // -----------------------------
@@ -69,13 +89,14 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // -----------------------------    
     /** Prints message in case of bad argument(s) */
     def badArgs() = {
-  	  println("Bad argument(s)")
-      println(usage)
+  	  rootLogger.error("Please refer to the following USAGE :")
+      rootLogger.error(usage)
       exit(1)
 	  }
 	  
     // If no args -> Error
 		if (options.isEmpty) {
+		  rootLogger.error("No arguments specified.");
 		  badArgs()
 		}
 		else {
@@ -83,6 +104,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		  if (!(options.contains('datacoreMongoIP) && options.contains('datacoreMongoId)
 		      && options.contains('aggregationMongoIP) && options.contains('aggregationMongoId)
 		      && options.contains('aggregationType))) {
+		    rootLogger.error("You forgot to specify either the datacore mongo IP/Id, the aggregation mongo IP/Id or the aggregation type.");
 		    badArgs()
 		  }
 		  else {
@@ -90,49 +112,58 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		      // If try to mention groupby or city when all aggregations -> Error
 		      if (options.contains('groupByTime) || options.contains('groupByOtherDimension)
 		          || options.contains('city)) {
+		        rootLogger.error("You cannot specify a --groupByTime or --groupByOtherDimension in this context.");
 		        badArgs()
 		      }
 		    }
 		    else if (options('aggregationType) == "avg") {
 		      // If try specific aggregation type without groupby -> Error
 		      if (!(options.contains('groupByTime) && options.contains('groupByOtherDimension))) {
+		        rootLogger.error("You cannot aggregate without specifying both --groupBy<>.");
 		        badArgs()
 		      }
 		      // If try groupByTime isn't of an authorized type -> Error
 		      else if (!(options('groupByTime) == "day" || options('groupByTime) == "month"
 		          || options('groupByTime) == "year")) {
+		        rootLogger.error("The time measure you entered is not valid.");
 		        badArgs()
 		      }
 		      // If try groupByOtherDimension isn't of an authorized type -> Error
 		      else if (!(options('groupByOtherDimension) == "city" || options('groupByOtherDimension) == "contract")) {
+		        rootLogger.error("The other dimension measure is not valid.");
 		        badArgs()
 		      }
 		      // If we want to group by city but no city is specified
 		      else if (options('groupByOtherDimension) == "city" && !options.contains('city)) {
+		        rootLogger.error("You must specify an existing city name if you wish to aggregate only for this specific city.");
 		        badArgs()
 		      }
 		    }
 		    else if (options('aggregationType) == "sum") {
 		      // If try specific aggregation type without groupby -> Error
 		      if (!(options.contains('groupByTime) && options.contains('groupByOtherDimension))) {
+		        rootLogger.error("You cannot aggregate without specifying both --groupBy<>.");
 		        badArgs()
 		      }
 		      // If try groupByTime isn't of an authorized type -> Error
 		      else if (!(options('groupByTime) == "day" || options('groupByTime) == "month"
 		          || options('groupByTime) == "year")) {
+		        rootLogger.error("The time measure you entered is not valid.");
 		        badArgs()
 		      }
 		      // If try groupByOtherDimension isn't of an authorized type -> Error
 		      else if (!(options('groupByOtherDimension) == "contract")) {
+		        rootLogger.error("The other dimension measure is not valid.");
 		        badArgs()
 		      }
 		      // If try to mention city -> Error
 		      else if (options.contains('city)) {
+		        rootLogger.error("You cannot specify a city in this context.");
 		        badArgs()
 		      }
 		    }
 		  }
-		}		
+		}
     // ------------ END ------------
 		// Options coherence check
     // -----------------------------
@@ -142,7 +173,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // -----------------------------		
 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondaryPreferred"
     val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
-
+    
 		val conf = new SparkConf()
 		  .setAppName("Aggregations")
 		  .set("spark.app.id", "Aggregations")
