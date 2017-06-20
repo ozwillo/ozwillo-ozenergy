@@ -82,6 +82,7 @@ public class EnergyAggregationServices {
 		System.out.println("Command args are : " + appArgs.toString());
 		
 		SparkLauncher spark = new SparkLauncher(env)
+				//.addSparkArg("--driver-java-options", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=7500")
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
