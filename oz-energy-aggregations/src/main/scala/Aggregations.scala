@@ -171,9 +171,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Spark config
     // -----------------------------
-		// "mongodb://<mongos>:<port>/<dbname>.<collection>?readPreference=secondary"
-//		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?slaveOk=true"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
- 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?slaveOk=true"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
+ 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondary"
 		val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
     
 		val conf = new SparkConf()
