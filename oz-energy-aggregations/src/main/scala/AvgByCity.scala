@@ -19,14 +19,14 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  val datacoreMongoIP: String = sc.getConf.get("datacoreMongoIP");
 	  val datacoreMongoId: String = sc.getConf.get("datacoreMongoId");
 	  
-	  val persidURI: String = "mongodb://" + "ozwillo-mongo-1,ozwillo-mongo-3" + "/" + datacoreMongoId + ".org_1.persid:Identity_0?readPreference=secondary";
+	  val persidURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".org_1.persid:Identity_0?readPreference=secondary";
     
 	  val readConfigPersid = ReadConfig(Map("uri" -> persidURI, 
 	      "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val persidRdd = MongoSpark.load(sc, readConfigPersid)
 	  
 	  //get contract data from Mongo Datacore
-	  val contractURI: String = "mongodb://" + "ozwillo-mongo-1,ozwillo-mongo-3" + "/" + datacoreMongoId + ".oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondary";
+	  val contractURI: String = "mongodb://" + datacoreMongoIP + "/" + datacoreMongoId + ".oasis.sandbox.enercontr:EnergyConsumptionContract_0?readPreference=secondary";
     
   	val readConfigContract = ReadConfig(Map("uri" -> contractURI, 
   	    "partitioner" -> "MongoPaginateBySizePartitioner"))

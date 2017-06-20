@@ -44,7 +44,7 @@ datacore:
   data: # Location of Datacore database
     mongodb:
       database: datacore
-      host: ozwillo-mongo-3
+      host: ozwillo-mongo-1,ozwillo-mongo-3
   #url: http://localhost:8080
   url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
   #url: https://plnm-dev-dc             # dev, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert :

@@ -20,10 +20,10 @@ object Aggregations extends Serializable with AvgByDayAndContract with AvgByCity
 with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContract {
 	val usage = """
       Usage is :
-        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type all [--all-cities]
-        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension contract
-        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension city --city Lyon
-        Aggregations --datacore-mongo-IP 127.0.0.1 --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type sum --groupBy-time day/month/year --groupBy-otherDimension contract
+        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type all [--all-cities]
+        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension contract
+        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension city --city Lyon
+        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type sum --groupBy-time day/month/year --groupBy-otherDimension contract
     """
 
 	def main(args: Array[String]) {
@@ -173,7 +173,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // -----------------------------
 		// "mongodb://<mongos>:<port>/<dbname>.<collection>?readPreference=secondary"
 //		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?slaveOk=true"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
- 		val inputUri: String = "mongodb://" + "ozwillo-mongo-1,ozwillo-mongo-3" + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondary"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
+ 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?slaveOk=true"// LATER alternative readPreference=secondaryPreferred (requires to define in OCCI LDProject.readPreference)
 		val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
     
 		val conf = new SparkConf()
