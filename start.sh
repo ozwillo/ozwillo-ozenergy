@@ -14,7 +14,7 @@ export SPARK_MASTER_PORT=7077
 export SPARK_MASTER_WEBUI_PORT=16160
 
 export MAVEN_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
-export SPARK_SUBMIT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7500"
+# export SPARK_SUBMIT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7500"
 
 # Start mongod and OzEnergy
 mongod --fork --logpath /app/mongod.log --smallfiles
