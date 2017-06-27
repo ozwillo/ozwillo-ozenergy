@@ -15,7 +15,7 @@ RUN /bin/bash -C /tmp/deploy.sh
 EXPOSE 8080
 # Make port 8000 (http) available to the world outside this container, for jdpa
 # oz-energy debug
-EXPOSE 8080
+EXPOSE 8000
 # Make port 7500 (http) available to the world outside this container, for jdpa
 # oz-energy-aggregations debug
 EXPOSE 7500
