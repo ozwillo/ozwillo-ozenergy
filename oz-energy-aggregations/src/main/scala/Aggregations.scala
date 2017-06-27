@@ -30,7 +30,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		// To avoid displaying to much information
 		val rootLogger = Logger.getRootLogger()
     rootLogger.setLevel(Level.DEBUG)
-  
+
     val fa: FileAppender = new FileAppender();
 		val pl: PatternLayout = new PatternLayout("%d %-5p [%c{1}] %m%n");
     fa.setName("FileLogger");
@@ -39,11 +39,11 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     fa.setThreshold(Level.DEBUG);
     fa.setAppend(true);
     fa.activateOptions();
-    
+
     Logger.getRootLogger().addAppender(fa);
-    
+
     rootLogger.debug("Aggregations Logger is up and running.");
-    
+
     // ----------- BEGIN -----------
 		// Arguments to Options map
     // -----------------------------
@@ -78,22 +78,22 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
       }
     }
     val options = nextOption(Map(),arglist)
-    
+
     rootLogger.debug(options.toString());
     // ------------ END ------------
 		// Arguments to Options map
     // -----------------------------
-    
+
     // ----------- BEGIN -----------
 		// Options coherence check
-    // -----------------------------    
+    // -----------------------------
     /** Prints message in case of bad argument(s) */
     def badArgs() = {
   	  rootLogger.error("Please refer to the following USAGE :")
       rootLogger.error(usage)
       exit(1)
 	  }
-	  
+
     // If no args -> Error
 		if (options.isEmpty) {
 		  rootLogger.error("No arguments specified.");
@@ -171,9 +171,14 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Spark config
     // -----------------------------
- 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + ".oasis.sandbox.enercons:EnergyConsumption_0?readPreference=secondary"
+		val energyProject: String = "energy_0";
+		val energyContractCollection: String = "enercontr:EnergyConsumptionContract_0";
+		val energyConsumptionCollection: String = "enercons:EnergyConsumption_0";
+		val mongoParameters: String = "readPreference=secondary";
+
+ 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + "." + energyProject + "." + energyConsumptionCollection + "?" + mongoParameters
 		val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
-    
+
 		val conf = new SparkConf()
 		  .setAppName("Aggregations")
 		  .set("spark.app.id", "Aggregations")
@@ -183,7 +188,11 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		  .set("datacoreMongoId", options('datacoreMongoId))
 		  .set("aggregationMongoIP", options('aggregationMongoIP))
 		  .set("aggregationMongoId", options('aggregationMongoId))
-		val sc = new SparkContext(conf)		
+		  .set("energyProject", energyProject)
+		  .set("energyContractCollection", energyContractCollection)
+		  .set("energyConsumptionCollection", energyConsumptionCollection)
+		  .set("mongoParameters", mongoParameters)
+		val sc = new SparkContext(conf)
     // ------------ END ------------
 		// Spark config
     // -----------------------------

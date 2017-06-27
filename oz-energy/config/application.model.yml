@@ -45,6 +45,10 @@ datacore:
     mongodb:
       database: datacore
       host: ozwillo-mongo-1,ozwillo-mongo-3
+      energy_project: energy_0
+      energy_contract_collection: enercontr:EnergyConsumptionContract_0
+      energy_consumption_collection: enercons:EnergyConsumption_0
+
   #url: http://localhost:8080
   url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
   #url: https://plnm-dev-dc             # dev, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert :

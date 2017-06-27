@@ -1,4 +1,3 @@
-orgfr:legalName-fr,orgfr:displayName-fr,orgfr:altName-fr,orgfr:displayAlt-fr,orgfr:street&Number,orgfr:supAddress,orgfr:cedex,orgfr:postCode,geocifr:name,orgactfr:code,orgfr:siret,geocofr:idIso,geon3fr:idIso
-EDF,"EDF, FR",,,22-30 avenue de Wagram,,,75008,Paris,01.12Z,55208131766522,FR,FR-75
-//BALDO FRUITS,TODO Direct Energie,,,Avenue GAMBETTA,,,70300,Abelcourt,01.49Z,33803799700024,FR,FR-70
-//BEC Jean-Michel et Raymond,TODO Engie,EARL des Muttes,,LES MUTTES,,,39110,Abergement-lès-Thésy,03.12Z,38963386800010,FR,FR-39
+orgfr:legalName-fr,orgfr:displayName-fr,orgfr:altName-fr,orgfr:displayAlt-fr,orgfr:street&Number,orgfr:supAddress,orgfr:cedex,orgfr:postCode,geocifr:name,orgactfr:code,orgfr:siret,geocofr:idIso,geon2fr:idIso,geon3fr:idIso
+EDF,"EDF, FR",,,22-30 avenue de Wagram,,,75008,Paris,01.12Z,55208131766522,FR,FR-J,FR-75
+
