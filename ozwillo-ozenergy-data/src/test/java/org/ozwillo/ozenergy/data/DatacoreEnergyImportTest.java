@@ -108,7 +108,7 @@ public class DatacoreEnergyImportTest {
       // geo_1 (with addrpostci:name), org_1 (with providers)
       // as well as models of : org_1.persid:, energy_0.ener*
 
-      boolean serverRatherThanClient = true;
+      boolean serverRatherThanClient = false;
 
       DatacoreApi datacoreApi;
       if (serverRatherThanClient) {
@@ -131,7 +131,7 @@ public class DatacoreEnergyImportTest {
       csvImportService.importCsv("energy/energy_consumers.csv", 1000000, true,
             "org_1", line -> {
          String countryId = line[12]; // geocofr:idIso
-         String cityId = countryId + '/' + line[13] + '/' + line[14]; // geon3fr:idIso  geocifr:name
+         String cityId = countryId + '/' + line[14] + '/' + line[15]; // geon3fr:idIso  geocifr:name
          String consumerId = hashCodeId(line[4]);
          DCResource r = DCResource.create(null, "persid:Identity_0")
                .set("persid:firstName", line[0])
@@ -163,7 +163,7 @@ public class DatacoreEnergyImportTest {
       final Map<String,String> customerKeyToContractId = new HashMap<String,String>();
       //importCsv("energy/energy_consumers.csv", 1000000, true,
       csvImportService.importCsv("energy/energy_contracts.csv", 1000000, true,
-            DCProject.OASIS_SANBOX, line -> {
+            null, line -> {
          // energy_contracts.csv fields :
          // orgfr:siret geocofr:idIso  persid:email   enercontr:displayName   enercontr:customerKey
          String providerId = line[1] + '/' + line[0];
@@ -191,7 +191,7 @@ public class DatacoreEnergyImportTest {
       String consumptionsCsvPath = "energy/energy-ok-import-datacore.csv";
       final List<String> customerKeysWithoutContract = new ArrayList<String>();
       csvImportService.importCsv(consumptionsCsvPath, 1000000, false,
-            DCProject.OASIS_SANBOX, line -> {
+            null, line -> {
          String customerKey = line[0];
          String contractId = customerKeyToContractId.get(customerKey); // "FR/49015839100014/964549036";
          if (contractId == null) {

@@ -59,7 +59,7 @@ public class ContractService {
          // noauthdevmode, return default
          // (otherwise this page can't be reached unless logged in)
     	 // This contract is associated with "jacques.colard@gmail.com"
-         return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
+         return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/55208131766522/39080212";
       }
 
       // finding users's persid:Person in the Datacore (or could do it using aggregation) :
