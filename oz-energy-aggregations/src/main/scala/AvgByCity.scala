@@ -45,7 +45,8 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
   	  .filter(doc => doc.get("_p").asInstanceOf[org.bson.Document]
   	  .get("adrpost:postName").asInstanceOf[String].contains(city))
   	 
-  	rootLogger.error("FilteredPersidRdd : " + filteredPersidRdd);
+  	rootLogger.error("FilteredPersidRdd : ")
+  	filteredPersidRdd.take(100).foreach(rootLogger.error)
 
   	//join persid and contract to find the contracts in the city
   	val mappedPersidRdd = filteredPersidRdd.map(persid => (persid.get("_uri").asInstanceOf[String], persid)) //(persid._uri, persid)

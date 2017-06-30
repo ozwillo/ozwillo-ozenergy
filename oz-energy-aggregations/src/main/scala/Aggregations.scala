@@ -209,7 +209,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
   	  sumByYearAndContract(sc)
   	  if (options('allCities) == "true") {
     	  val cities = getCities(sc)
-    	  rootLogger.error("Cities : " + cities);
+    	  rootLogger.error("Cities : " + cities.mkString(" "));
     	  for (city <- cities) {
     	    avgByDayAndCity(sc, city)
     	    avgByMonthAndCity(sc, city)
