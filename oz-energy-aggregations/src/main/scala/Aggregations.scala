@@ -29,20 +29,20 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 	def main(args: Array[String]) {
 		// To avoid displaying to much information
 		val rootLogger = Logger.getRootLogger()
-    rootLogger.setLevel(Level.DEBUG)
+    rootLogger.setLevel(Level.ERROR)
 
     val fa: FileAppender = new FileAppender();
 		val pl: PatternLayout = new PatternLayout("%d %-5p [%c{1}] %m%n");
     fa.setName("FileLogger");
     fa.setFile("aggregations.log");
     fa.setLayout(pl);
-    fa.setThreshold(Level.DEBUG);
+    fa.setThreshold(Level.ERROR);
     fa.setAppend(true);
     fa.activateOptions();
 
     Logger.getRootLogger().addAppender(fa);
 
-    rootLogger.debug("Aggregations Logger is up and running.");
+    rootLogger.error("Aggregations Logger is up and running.");
 
     // ----------- BEGIN -----------
 		// Arguments to Options map
@@ -209,6 +209,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
   	  sumByYearAndContract(sc)
   	  if (options('allCities) == "true") {
     	  val cities = getCities(sc)
+    	  rootLogger.error("Cities : " + cities);
     	  for (city <- cities) {
     	    avgByDayAndCity(sc, city)
     	    avgByMonthAndCity(sc, city)
