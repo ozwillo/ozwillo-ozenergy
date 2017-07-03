@@ -10,10 +10,10 @@ import org.bson.Document
 
 import java.util.Date
 
-import org.apache.log4j.{Level, Logger}
+//import org.apache.log4j.{Level, Logger}
 
 trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract with ByYearAndContract{
-  val rootLogger = Logger.getRootLogger()
+//  val rootLogger = Logger.getRootLogger()
   
   def filterData(sc: SparkContext, city: String, rdd: com.mongodb.spark.rdd.MongoRDD[org.bson.Document])
     : org.apache.spark.rdd.RDD[org.bson.Document] = {
@@ -45,8 +45,9 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
   	  .filter(doc => doc.get("_p").asInstanceOf[org.bson.Document]
   	  .get("adrpost:postName").asInstanceOf[String].contains(city))
   	 
-  	rootLogger.error("FilteredPersidRdd : ")
-  	filteredPersidRdd.take(100).foreach(rootLogger.error)
+//  	rootLogger.error("FilteredPersidRdd : ")
+//  	val myLogs: String = filteredPersidRdd.take(100).mkString(", ")
+//  	rootLogger.error(myLogs)
 
   	//join persid and contract to find the contracts in the city
   	val mappedPersidRdd = filteredPersidRdd.map(persid => (persid.get("_uri").asInstanceOf[String], persid)) //(persid._uri, persid)
