@@ -171,7 +171,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Spark config
     // -----------------------------
-		val energyProject: String = "energy_analysis_0";
+		val energyProject: String = "energy_0";
 		val energyContractCollection: String = "enercontr:EnergyConsumptionContract_0";
 		val energyConsumptionCollection: String = "enercons:EnergyConsumption_0";
 		val mongoParameters: String = "readPreference=secondary";
