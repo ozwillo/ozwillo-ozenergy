@@ -11,8 +11,8 @@ OzEnergy - energy consumption monitoring for consumers, providers and territorie
 If you have Docker installed (if not, you can find how to do so [here](https://docs.docker.com/engine/installation/)), and don't want to mess with your pre-existing dev environment, you may prefer this to the next section ("Or build and run it locally").
 
 ``` bash
-git clone https://github.com/occiware/ozwillo-ozenergy.git
-cd ozwillo-ozenergy
+git clone https://github.com/occiware/occiware-ozwillo.git
+cd occiware-ozwillo/docker/ozwillo-ozenergy
 sudo docker build -t ozenergy .
 sudo docker run -p 8080:8080 ozenergy
 ```
