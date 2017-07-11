@@ -28,19 +28,40 @@ public class ContractService {
    private DatacoreClient datacore;
    @Value("${application.devmode:false}")
    private boolean devmode;
-   
+   @Value("${application.security.noauthdevmode:false}")
+   private boolean noauthdevmode;
+
+   @Value("${datacore.data.mongodb.energy_project}")
+   private String energyProject;
+   @Value("${datacore.data.mongodb.energy_contract_collection}")
+   private String energyContractCollection;
+   @Value("${datacore.data.mongodb.energy_consumption_collection}")
+   private String energyConsumptionCollection;
+
    public String getCurrentUserContract() {
-      String kernelUserEmail = userInfoService.currentUser().getEmail();
+	  String kernelUserEmail = null;
+	  try {
+		  kernelUserEmail = userInfoService.currentUser().getEmail();
+	  } catch (Exception e) {
+		  if (devmode && noauthdevmode) {
+			  logger.info("devmode && noauthdevmode activated - No user found : switching to default user jacques.colard@gmail.com");
+		  }
+		  else {
+			  logger.info("devmode or noauthdevmode not activated - No user found : returning no contract");
+			  return null;
+		  }
+	  }
       return getUserContractFromEmail(kernelUserEmail);
    }
-   
+
    public String getUserContractFromEmail(String email) {
       if (email == null) {
          // noauthdevmode, return default
          // (otherwise this page can't be reached unless logged in)
-         return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
+    	 // This contract is associated with "jacques.colard@gmail.com"
+         return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/55208131766522/39080212";
       }
-      
+
       // finding users's persid:Person in the Datacore (or could do it using aggregation) :
       // (requires to put the current user's email in the demo energy_consumers.csv and reimport it)
       try {
@@ -48,7 +69,7 @@ public class ContractService {
                new DCQueryParameters("persid:email", DCOrdering.DESCENDING, DCOperator.EQ, "\"" + email + "\""), 0, 2);
          if (personFound.size() == 1) {
             DCResource user = personFound.get(0);
-            List<DCResource> contractFound = datacore.findResources("oasis.sandbox", "enercontr:EnergyConsumptionContract_0",
+            List<DCResource> contractFound = datacore.findResources(energyProject, energyContractCollection,
                   new DCQueryParameters("enercontr:consumer", DCOperator.EQ, "\"" + user.getUri() + "\""), 0, 2);
             if (contractFound.size() == 1) {
                return contractFound.get(0).getUri();
@@ -58,7 +79,7 @@ public class ContractService {
          logger.warn("HTTP client error finding contract in Datacore, "
                + "probably not found custom energy models", httpcex.getMessage());
       }
-      
+
       if (devmode) {
          // else using hardcoded mapping for demo :
          switch (email) {
@@ -70,9 +91,9 @@ public class ContractService {
          // else default :
          return "http://data.ozwillo.com/dc/type/enercontr:EnergyConsumptionContract_0/FR/49015839100014/39080212";
       }
-      
+
       // TODO LATER offer to create a contract
       throw new RuntimeException("No contract for current user " + email);
    }
-   
+
 }

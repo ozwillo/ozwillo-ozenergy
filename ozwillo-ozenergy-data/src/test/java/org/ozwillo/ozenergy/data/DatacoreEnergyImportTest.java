@@ -47,9 +47,9 @@ import au.com.bytecode.opencsv.CSVReader;
 /**
  * Injects energy data :
  * TODO
- * 
- * Requires model to have been already imported (ex. using the Playground Import tool) 
- * 
+ *
+ * Requires model to have been already imported (ex. using the Playground Import tool)
+ *
  * @author mdutoo
  *
  */
@@ -57,19 +57,19 @@ import au.com.bytecode.opencsv.CSVReader;
 @ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING) // else random since java 7 NOT REQUIRED ANYMORE
 public class DatacoreEnergyImportTest {
-   
+
    @Autowired
    @Qualifier("datacoreApiCachedJsonClient")
    private /*DatacoreApi*/DatacoreCachedClient datacoreApiClient;
    @Autowired
    private ResourceService resourceService;
-   
+
    /** to init models */
    @Autowired
    private /*static */DataModelServiceImpl modelServiceImpl;
    ///@Autowired
    ///private CityCountrySample cityCountrySample;
-   
+
    /** to cleanup db
     * TODO LATER rather in service */
    @Autowired
@@ -79,12 +79,12 @@ public class DatacoreEnergyImportTest {
    @Autowired
    @Qualifier("datacore.rest.client.cache.rest.api.DCResource")
    private Cache resourceCache; // EhCache getNativeCache
-   
+
    /** to be able to build a full uri, to check in tests
     * TODO rather client-side DCURI or rewrite uri in server */
-   ///@Value("${datacoreApiClient.baseUrl}") 
+   ///@Value("${datacoreApiClient.baseUrl}")
    ///private String baseUrl; // useless
-   @Value("${datacoreApiClient.containerUrl}") 
+   @Value("${datacoreApiClient.containerUrl}")
    private String containerUrlString;
    @Value("#{new java.net.URI('${datacoreApiClient.containerUrl}')}")
    //@Value("#{uriService.getContainerUrl()}")
@@ -92,31 +92,31 @@ public class DatacoreEnergyImportTest {
 
    /** for testing purpose */
    @Autowired
-   @Qualifier("datacoreApiImpl") 
+   @Qualifier("datacoreApiImpl")
    private DatacoreApiImpl datacoreApiImpl;
    @Autowired
    private LocalAuthenticationService authenticationService;
    /** for testing purpose */
    @Autowired
    private LdpEntityQueryServiceImpl ldpEntityQueryServiceImpl;
-   
+
 
 
    @Test
    public void importEnergySampleData() throws Exception {
       // ASSUMING there are already resources (and their models) :
       // geo_1 (with addrpostci:name), org_1 (with providers)
-      // as well as models of : org_1.persid:, oasis.sandbox.ener*
-      
-      boolean serverRatherThanClient = true;
-      
+      // as well as models of : org_1.persid:, energy_0.ener*
+
+      boolean serverRatherThanClient = false;
+
       DatacoreApi datacoreApi;
       if (serverRatherThanClient) {
-         authenticationService.loginAs("admin"); // works only on server-side (on client side, also requires Bearer/Basic credentials)  
+         authenticationService.loginAs("admin"); // works only on server-side (on client side, also requires Bearer/Basic credentials)
          datacoreApi = datacoreApiImpl;
-         
+
       } else {
-         AuthenticationHelper.loginBasicAsAdmin(); // works only on client side in devmode 
+         AuthenticationHelper.loginBasicAsAdmin(); // works only on client side in devmode
          datacoreApi = datacoreApiClient;
       }
       CsvResourceBulkImportService csvImportService = new CsvResourceBulkImportService();
@@ -125,13 +125,13 @@ public class DatacoreEnergyImportTest {
       // providers :
       //String csvResourcePath = "energy/energy_providers.csv";
       ///final String defaultProviderId = "FR/49015839100014";
-      
+
       // consumers (persid) :
       // TODO LATER login as each consumer user (provided in csv) and batch = 1 to setup permissions
       csvImportService.importCsv("energy/energy_consumers.csv", 1000000, true,
             "org_1", line -> {
          String countryId = line[12]; // geocofr:idIso
-         String cityId = countryId + '/' + line[13] + '/' + line[14]; // geon3fr:idIso  geocifr:name
+         String cityId = countryId + '/' + line[14] + '/' + line[15]; // geon3fr:idIso  geocifr:name
          String consumerId = hashCodeId(line[4]);
          DCResource r = DCResource.create(null, "persid:Identity_0")
                .set("persid:firstName", line[0])
@@ -154,16 +154,16 @@ public class DatacoreEnergyImportTest {
          r.set("persid:fullAddress", "" + r.get("persid:firstName") + ' ' + r.get("persid:lastName"));*/
          // once props are complete, build URI out of them :
          r.setUriFromId(containerUrl, consumerId);
-               
+
          return new DCResource[] { r };
       });
-      
+
       // contracts (enercontr, from persid csv) :
       // TODO LATER login as each consumer user (provided in csv) and batch = 1 to setup permissions
       final Map<String,String> customerKeyToContractId = new HashMap<String,String>();
       //importCsv("energy/energy_consumers.csv", 1000000, true,
       csvImportService.importCsv("energy/energy_contracts.csv", 1000000, true,
-            DCProject.OASIS_SANBOX, line -> {
+            null, line -> {
          // energy_contracts.csv fields :
          // orgfr:siret geocofr:idIso  persid:email   enercontr:displayName   enercontr:customerKey
          String providerId = line[1] + '/' + line[0];
@@ -171,7 +171,7 @@ public class DatacoreEnergyImportTest {
          String contractId = providerId + '/' + consumerId;
          String customerKey = line[4];
          customerKeyToContractId.put(customerKey, contractId);
-               
+
          // OR rather generating it from energy_consumers.csv :
          ///String providerId = defaultProviderId;
          //String consumerId = hashCodeId(line[4]);
@@ -181,17 +181,17 @@ public class DatacoreEnergyImportTest {
                .set("odisp:displayName", line[3])
                .set("enercontr:customerKey", customerKey);
          cr.setUriFromId(containerUrl, contractId);
-               
+
          return new DCResource[] { cr };
       });
 
       //String csvResourcePath = "energy/energy_contracts.csv";
-      
+
       //String consumptionsCsvPath = "/home/mdutoo/dev/oasis/workspace/ozwillo-ozenergy/energy-ok-import-datacore.csv";
       String consumptionsCsvPath = "energy/energy-ok-import-datacore.csv";
       final List<String> customerKeysWithoutContract = new ArrayList<String>();
       csvImportService.importCsv(consumptionsCsvPath, 1000000, false,
-            DCProject.OASIS_SANBOX, line -> {
+            null, line -> {
          String customerKey = line[0];
          String contractId = customerKeyToContractId.get(customerKey); // "FR/49015839100014/964549036";
          if (contractId == null) {
@@ -202,24 +202,24 @@ public class DatacoreEnergyImportTest {
                .set("enercons:contract", UriService.buildUri("enercontr:EnergyConsumptionContract_0", contractId))
                .set("enercons:date", DateTime.parse(line[1])) // joda rather than java 8 date (not supported locally)
                .set("enercons:globalKWH", parseNumber(line[7]));
-         
+
          r.setUriFromId(containerUrl, contractId + '/' + r.get("enercons:date"));
          return new DCResource[] { r };
       });
-      
+
       System.out.println("Not imported " + customerKeysWithoutContract.size()
          + " consumptions having no contract with the following customerKeys: "
          + new HashSet<String>(customerKeysWithoutContract));
       System.out.println("serverRatherThanClient=" + serverRatherThanClient);
    }
-   
-   
+
+
    ///@Test
    public void testDraft() throws Exception {
       // set sample project :
       SimpleRequestContextProvider.setSimpleRequestContext(new ImmutableMap.Builder<String, Object>()
             .put(DatacoreApi.PROJECT_HEADER, DCProject.OASIS_SANBOX).build());
-      
+
       authenticationService.loginAs("guest");
       int maxLineNb = 1000000; // 5
 
@@ -241,7 +241,7 @@ public class DatacoreEnergyImportTest {
                   .set("mod_Energy:CUSTOMER_KEY", Integer.parseInt(line[0], 10))
                   .set("mod_Energy:date_mesure", line[1])
                   .set("mod_Energy:General_Supply_KWH", Double.parseDouble(line[7]));
-            
+
             // once props are complete, build URI out of them and schedule post :
             r.setUriFromId(containerUrl, r.get("mod_Energy:CUSTOMER_KEY").toString()
                   + '/' + r.get("mod_Energy:date_mesure"));
@@ -267,10 +267,10 @@ public class DatacoreEnergyImportTest {
                + " web app error reading classpath CSV resource " + csvResourcePath
                + " :\n" + waex.getResponse().getStringHeaders() + "\n"
                + ((waex.getResponse().getEntity() != null) ? waex.getResponse().getEntity() + "\n\n" : ""), waex);
-         
+
       } catch (Exception ex) {
          throw new RuntimeException("Error reading classpath CSV resource " + csvResourcePath, ex);
-         
+
       } finally {
          try {
             csvReader.close();
@@ -280,6 +280,6 @@ public class DatacoreEnergyImportTest {
       }
 
    }
-   
+
 
 }

@@ -1,32 +1,32 @@
-persid:firstName,persid:lastName,persid:displayName,persid:gender,persid:email,persid:birthDate,persid:fullAddress,persid:streetAndNumber,persid:supField,persid:postCode,persid:POBox,persid:cedex,geocofr:idIso,geon3fr:idIso,geocifr:name,enercontr:consumer.persid:id
-Jean,Bon,Jean Bon,,jean.bon@gmail.com,,,107 rue Bossuet,,69006,,,FR,FR-69,Lyon,jean.bon@gmail.com
-Vincent,René,Vincent René,,vincent.rene@orange.fr,,,7 montée Bonafous,,69004,,,FR,FR-69,Lyon,vincent.rene@orange.fr
-Fred,Desford,Fred Desford,,fred.desford@yahoo.fr,,,70 boulevard Reuilly,,75012,,,FR,FR-75,Paris,fred.desford@yahoo.fr
-Jacques,Colard,Jacques Colard,,jacques.colard@gmail.com,,,84 boulevard Gambetta,,69001,,,FR,FR-69,Lyon,jacques.colard@gmail.com
-Juliette,Martin,Juliette Martin,,juliette.martin@yahoo.fr,,,8 place Jean Racine,,69007,,,FR,FR-69,Lyon,juliette.martin@yahoo.fr
-Lucienne,Dupont,Lucienne Dupont,,lucienne.dupont@aol.com,,,10 cours Franklin Roosevelt,,69006,,,FR,FR-69,Lyon,lucienne.dupont@aol.com
-Julien,Wolf,Julien Wolf,,julien.wolf@gmail.com,,,24 rue Voltaire,,75011,,,FR,FR-75,Paris,julien.wolf@gmail.com
-Elizabeth,Guillaumin,Elizabeth Guillaumin,,elizabeth.guillaumin@wanadoo.fr,,,13 passage Gabriel Peri,,63000,,,FR,FR-63,Clermont-Ferrand,elizabeth.guillaumin@wanadoo.fr
-Virginie,Despins,Virginie Despins,,virginie.despins@yahoo.fr,,,3 rue de Verdun,,69003,,,FR,FR-69,Lyon,virginie.despins@yahoo.fr
-Anthony,Tissor,Anthony Tissor,,anthony.tissor@gmail.com,,,2 rue Etienne Richerand,,75014,,,FR,FR-75,Paris,anthony.tissor@gmail.com
-Gerard,Tisserand,Gerard Tisserand,,gerard.tisserand@gmail.com,,,12 avenue du Général de Gaulle,,59350,,,FR,FR-59,Lille,gerard.tisserand@gmail.com
-Anais,Blondeau,Anais Blondeau,,anais.blondeau@yahoo.fr,,,27 rue Pauk Cazeneuve,,69008,,,FR,FR-69,Lyon,anais.blondeau@yahoo.fr
-Melina,Steinmetz,Melina Steinmetz,,melina.steinmetz@gmail.com,,,41 rue Emile Zola,,75012,,,FR,FR-75,Paris,melina.steinmetz@gmail.com
-Nada,Shedid,Nada Shedid,,nada.shadid@gmail.com,,,17 rue Saint Jean,,75006,,,FR,FR-75,Paris,nada.shadid@gmail.com
-Sarah,Robertson,Sarah Robertson,,sarah.roberston@gmail.com,,,9 allée des Pervenches,,44000,,,FR,FR-44,Nantes,sarah.roberston@gmail.com
-Oceane,Garcia,Oceane Garcia,,oceane.garcia@yahoo.fr,,,4 rue Jeanne d'Arc,,75013,,,FR,FR-75,Paris,oceane.garcia@yahoo.fr
-Charles,Leger,Charles Leger,,charles.leger@bbox.fr,,,19 rue Edouard Nieuport,,69008,,,FR,FR-69,Lyon,charles.leger@bbox.fr
-Luc,Monin,Luc Monin,,luc.monin@hotmail.fr,,,87 cours Franklin Roosevelt,,75006,,,FR,FR-75,Paris,luc.monin@hotmail.fr
-Jules,Bardon,Jules Bardon,,jules.bardon@gmail.com,,,12 rue du onze novembre 1918,,91300,,,FR,FR-91,Massy,jules.bardon@gmail.com
-Erci,Caudron,Erci Caudron,,eric.caudron@hotmail.fr,,,34 rue Sainte Geneviève,,69006,,,FR,FR-69,Lyon,eric.caudron@hotmail.fr
-Lucie,Leroux,Lucie Leroux,,lucie.leroux@hotmail.fr,,,21 rue des Renaudes,,75017,,,FR,FR-75,Paris,lucie.leroux@hotmail.fr
-Candice,Ferre,Candice Ferre,,candice.ferre@gmail.com,,,15 rue Moliere,,92310,,,FR,FR-92,Sèvres,candice.ferre@gmail.com
-Benjamin,Molina,Benjamin Molina,,benjamin.molina@gmail.com,,,123 avenue du 8 mai 1945,,69009,,,FR,FR-69,Lyon,benjamin.molina@gmail.com
-Tarek,Kellil,Tarek Kellil,,tarek.kellil@wanadoo.fr,,,13 rue des Lilas,,75020,,,FR,FR-75,Paris,tarek.kellil@wanadoo.fr
-Jean,Benoît,Jean Benoît,,jean.benoit@gmail.com,,,38 rue de Paris,,34172,,,FR,FR-34,Montpellier,jean.benoit@gmail.com
-Amira,Morillon,Amira Morillon,,amira.morillon@gmail.com,,,54 rue des Plantes,,69003,,,FR,FR-69,Lyon,amira.morillon@gmail.com
-Theodore,Schneider,Theodore Schneider,,theodore.schneider@gmail.com,,,4 place de la gare,,68000,,,FR,FR-68,Colmar,theodore.schneider@gmail.com
-Christina,Heinz,Christina Heinz,,christina.heinz@gmail.com,,,19 boulevard de Normandie,,75013,,,FR,FR-75,Paris,christina.heinz@gmail.com
-Coline,Barbier,Coline Barbier,,coline.barbier@yahoo.fr,,,20 rue Bannière,,69003,,,FR,FR-69,Lyon,coline.barbier@yahoo.fr
-Xavier,Charles,Xavier Charles,,xavier.charles@gmail.com,,,42 rue Saint Laurent,,75014,,,FR,FR-75,Paris,xavier.charles@gmail.com
-Samir,Moris,Samir Moris,,samir.moris@hotmail.fr,,,10 rue Jean Mace,,75018,,,FR,FR-75,Paris,samir.moris@hotmail.fr
+persid:firstName,persid:lastName,persid:displayName,persid:gender,persid:email,persid:birthDate,persid:fullAddress,persid:streetAndNumber,persid:supField,persid:postCode,persid:POBox,persid:cedex,geocofr:idIso,geon2fr:idIso,geon3fr:idIso,geocifr:name,enercontr:consumer.persid:id
+Jean,Bon,Jean Bon,,jean.bon@gmail.com,,,107 rue Bossuet,,69006,,,FR,FR-V,FR-69,Lyon,jean.bon@gmail.com
+Vincent,René,Vincent René,,vincent.rene@orange.fr,,,7 montée Bonafous,,69004,,,FR,FR-V,FR-69,Lyon,vincent.rene@orange.fr
+Fred,Desford,Fred Desford,,fred.desford@yahoo.fr,,,70 boulevard Reuilly,,75012,,,FR,FR-J,FR-75,Paris,fred.desford@yahoo.fr
+Jacques,Colard,Jacques Colard,,jacques.colard@gmail.com,,,84 boulevard Gambetta,,69001,,,FR,FR-V,FR-69,Lyon,jacques.colard@gmail.com
+Juliette,Martin,Juliette Martin,,juliette.martin@yahoo.fr,,,8 place Jean Racine,,69007,,,FR,FR-V,FR-69,Lyon,juliette.martin@yahoo.fr
+Lucienne,Dupont,Lucienne Dupont,,lucienne.dupont@aol.com,,,10 cours Franklin Roosevelt,,69006,,,FR,FR-V,FR-69,Lyon,lucienne.dupont@aol.com
+Julien,Wolf,Julien Wolf,,julien.wolf@gmail.com,,,24 rue Voltaire,,75011,,,FR,FR-J,FR-75,Paris,julien.wolf@gmail.com
+Elizabeth,Guillaumin,Elizabeth Guillaumin,,elizabeth.guillaumin@wanadoo.fr,,,13 passage Gabriel Peri,,63000,,,FR,FR-C,FR-63,Clermont-Ferrand,elizabeth.guillaumin@wanadoo.fr
+Virginie,Despins,Virginie Despins,,virginie.despins@yahoo.fr,,,3 rue de Verdun,,69003,,,FR,FR-V,FR-69,Lyon,virginie.despins@yahoo.fr
+Anthony,Tissor,Anthony Tissor,,anthony.tissor@gmail.com,,,2 rue Etienne Richerand,,75014,,,FR,FR-J,FR-75,Paris,anthony.tissor@gmail.com
+Gerard,Tisserand,Gerard Tisserand,,gerard.tisserand@gmail.com,,,12 avenue du Général de Gaulle,,59350,,,FR,FR-O,FR-59,Lille,gerard.tisserand@gmail.com
+Anais,Blondeau,Anais Blondeau,,anais.blondeau@yahoo.fr,,,27 rue Pauk Cazeneuve,,69008,,,FR,FR-V,FR-69,Lyon,anais.blondeau@yahoo.fr
+Melina,Steinmetz,Melina Steinmetz,,melina.steinmetz@gmail.com,,,41 rue Emile Zola,,75012,,,FR,FR-J,FR-75,Paris,melina.steinmetz@gmail.com
+Nada,Shedid,Nada Shedid,,nada.shadid@gmail.com,,,17 rue Saint Jean,,75006,,,FR,FR-J,FR-75,Paris,nada.shadid@gmail.com
+Sarah,Robertson,Sarah Robertson,,sarah.roberston@gmail.com,,,9 allée des Pervenches,,44000,,,FR,FR-R,FR-44,Nantes,sarah.roberston@gmail.com
+Oceane,Garcia,Oceane Garcia,,oceane.garcia@yahoo.fr,,,4 rue Jeanne d'Arc,,75013,,,FR,FR-J,FR-75,Paris,oceane.garcia@yahoo.fr
+Charles,Leger,Charles Leger,,charles.leger@bbox.fr,,,19 rue Edouard Nieuport,,69008,,,FR,FR-V,FR-69,Lyon,charles.leger@bbox.fr
+Luc,Monin,Luc Monin,,luc.monin@hotmail.fr,,,87 cours Franklin Roosevelt,,75006,,,FR,FR-J,FR-75,Paris,luc.monin@hotmail.fr
+Jules,Bardon,Jules Bardon,,jules.bardon@gmail.com,,,12 rue du onze novembre 1918,,91300,,,FR,FR-Q,FR-91,Massy,jules.bardon@gmail.com
+Erci,Caudron,Erci Caudron,,eric.caudron@hotmail.fr,,,34 rue Sainte Geneviève,,69006,,,FR,FR-V,FR-69,Lyon,eric.caudron@hotmail.fr
+Lucie,Leroux,Lucie Leroux,,lucie.leroux@hotmail.fr,,,21 rue des Renaudes,,75017,,,FR,FR-J,FR-75,Paris,lucie.leroux@hotmail.fr
+Candice,Ferre,Candice Ferre,,candice.ferre@gmail.com,,,15 rue Moliere,,92310,,,FR,FR-J,FR-92,Sèvres,candice.ferre@gmail.com
+Benjamin,Molina,Benjamin Molina,,benjamin.molina@gmail.com,,,123 avenue du 8 mai 1945,,69009,,,FR,FR-V,FR-69,Lyon,benjamin.molina@gmail.com
+Tarek,Kellil,Tarek Kellil,,tarek.kellil@wanadoo.fr,,,13 rue des Lilas,,75020,,,FR,FR-J,FR-75,Paris,tarek.kellil@wanadoo.fr
+Jean,Benoît,Jean Benoît,,jean.benoit@gmail.com,,,38 rue de Paris,,34172,,,FR,FR-K,FR-34,Montpellier,jean.benoit@gmail.com
+Amira,Morillon,Amira Morillon,,amira.morillon@gmail.com,,,54 rue des Plantes,,69003,,,FR,FR-V,FR-69,Lyon,amira.morillon@gmail.com
+Theodore,Schneider,Theodore Schneider,,theodore.schneider@gmail.com,,,4 place de la gare,,68000,,,FR,FR-A,FR-68,Colmar,theodore.schneider@gmail.com
+Christina,Heinz,Christina Heinz,,christina.heinz@gmail.com,,,19 boulevard de Normandie,,75013,,,FR,FR-J,FR-75,Paris,christina.heinz@gmail.com
+Coline,Barbier,Coline Barbier,,coline.barbier@yahoo.fr,,,20 rue Bannière,,69003,,,FR,FR-V,FR-69,Lyon,coline.barbier@yahoo.fr
+Xavier,Charles,Xavier Charles,,xavier.charles@gmail.com,,,42 rue Saint Laurent,,75014,,,FR,FR-J,FR-75,Paris,xavier.charles@gmail.com
+Samir,Moris,Samir Moris,,samir.moris@hotmail.fr,,,10 rue Jean Mace,,75018,,,FR,FR-J,FR-75,Paris,samir.moris@hotmail.fr

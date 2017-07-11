@@ -15,7 +15,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.oasis.datacore.common.context.SimpleRequestContextProvider;
-import org.oasis.datacore.core.entity.query.ldp.LdpEntityQueryServiceImpl;
 import org.oasis.datacore.rest.api.DCResource;
 import org.oasis.datacore.rest.api.DatacoreApi;
 import org.oasis.datacore.rest.api.util.UnitTestHelper;
@@ -30,13 +29,13 @@ import au.com.bytecode.opencsv.CSVReader;
 /**
  * Imports resources from CSV.
  * Requires model to have been already imported (ex. using the Playground Import tool).
- * 
+ *
  * - spring JdbcTemplate-like architecture, TODO LATER even integrate with Spring Batch ?
  * - can use either REST client or server DatacoreApi
  * - either batch (REQUIRES TO DELETE EXISTING RESOURCES) or checkExists mode
  * - supports file or classpath resource
  * - auth : login with the right user must be done explicitly using helpers
- * 
+ *
  * @author mdutoo
  *
  */
@@ -44,14 +43,14 @@ import au.com.bytecode.opencsv.CSVReader;
 public class CsvResourceBulkImportService {
 
    private static final Logger logger = LoggerFactory.getLogger(CsvResourceBulkImportService.class);
-   
+
    private DatacoreApi datacoreApi;
 
 
    // inspired by Spring (JdbcTemplate, Spring Batch for flat file)
    public interface IndexedFieldSetMapper<T> {
       public List<T> map(String[] indexedFieldSet);
-   } 
+   }
 
 
    /**
@@ -69,11 +68,11 @@ public class CsvResourceBulkImportService {
          String project,
          Function<String[], ? extends DCResource[]> indexedFieldSetResourceMapper) throws Exception {
       if (project == null) {
-         project = "oasis.sandbox";
+         project = "energy_0";
       }
       SimpleRequestContextProvider.setSimpleRequestContext(new ImmutableMap.Builder<String, Object>()
             .put(DatacoreApi.PROJECT_HEADER, project).build());
-      
+
       InputStream csvIn = getClass().getClassLoader().getResourceAsStream(csvFileOrClassPath);
       if (csvIn == null) { // in case of classpath resource only
          //throw new RuntimeException("Unable to find in classpath CSV resource");
@@ -83,10 +82,10 @@ public class CsvResourceBulkImportService {
          }
          csvIn = new FileInputStream(csvFile);
       }
-      
+
       long startTime = System.currentTimeMillis();
       int resourceBatchSize = 1000;
-      
+
       CSVReader csvReader = null;
       try  {
          csvReader = new CSVReader(new InputStreamReader(csvIn), ',');
@@ -102,7 +101,7 @@ public class CsvResourceBulkImportService {
                continue;
             }
             resourcesToPost.addAll(Arrays.asList(mappedResources));
-            
+
             //if ((ln + 1) % lineBatchSize == 0) {
             if (checkIfExists) { // prevents batch
                for (DCResource r : mappedResources) {
@@ -120,7 +119,7 @@ public class CsvResourceBulkImportService {
                      if (e.getResponse().getStatus() / 100 == 2) {} else throw e;
                   } // else don't repost it if already there (empty db for that)
                }
-               
+
             } else if (resourcesToPost.size() >= resourceBatchSize) {
                // ASSUMING THERE ARE NONE YET (else requires getData which forbids batch) TODO test it
                try {
@@ -131,10 +130,10 @@ public class CsvResourceBulkImportService {
                resourceNb += resourcesToPost.size();
                resourcesToPost.clear();
             }
-            
+
             // TODO LATER could catch around each line to allow importing other ones, and return all errors
          }
-         
+
          // post batch remainder :
          if (!checkIfExists && !resourcesToPost.isEmpty()) {
             try {
@@ -158,10 +157,10 @@ public class CsvResourceBulkImportService {
          throw new RuntimeException("HTTP " + r.getStatus()
                + " web app error reading classpath CSV resource " + csvFileOrClassPath
                + " :\n" + r.getStringHeaders() + "\n" + errMsg + "\n\n", waex);
-         
+
       /*} catch (Exception ex) {
          throw new RuntimeException("Error reading classpath CSV resource " + csvResourcePath, ex);*/
-       
+
       } finally {
          try {
             csvReader.close();
@@ -179,5 +178,5 @@ public class CsvResourceBulkImportService {
    public void setDatacoreApi(DatacoreApi datacoreApi) {
       this.datacoreApi = datacoreApi;
    }
-   
+
 }

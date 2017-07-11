@@ -43,7 +43,12 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
    * @param sc the context for Spark
    */
   def avgByYearAndContractPerDay(sc: SparkContext) = {
-    val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.avgMonthAndContract", 
+    val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURIRead: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgMonthAndContract";
+  	    
+    val readConfig = ReadConfig(Map("uri" -> aggregationURIRead, 
         "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val rdd = MongoSpark.load(sc, readConfig)
 	  
@@ -54,9 +59,11 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
 	    .append("date", t._1._2).append("globalKW", t._2))
 
 	  //To have an empty output collection
-	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgYearAndContract").drop()})
+	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgYearAndContract").drop()})
 	  //Saves the collection
-	  val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.avgYearAndContract"))
+	  val aggregationURIWrite: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgYearAndContract";
+	  
+	  val writeConfig = WriteConfig(Map("uri" -> aggregationURIWrite))
 	  res.saveToMongoDB(writeConfig)
   }
   
@@ -84,7 +91,12 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
    * @param sc the context for Spark
    */
   def sumByYearAndContract(sc: SparkContext) = {
-    val readConfig = ReadConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumMonthAndContract", 
+    val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
+	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
+	  
+	  val aggregationURIRead: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumMonthAndContract";
+  	
+    val readConfig = ReadConfig(Map("uri" -> aggregationURIRead, 
         "partitioner" -> "MongoPaginateBySizePartitioner"))
 	  val rdd = MongoSpark.load(sc, readConfig)
 	  
@@ -95,7 +107,9 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
 	  //To have an empty output collection
   	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumYearAndContract").drop()})
   	//Saves the collection
-  	val writeConfig = WriteConfig(Map("uri" -> "mongodb://127.0.0.1/datacore1.sumYearAndContract"))
+	  val aggregationURIWrite: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumYearAndContract";
+  	
+  	val writeConfig = WriteConfig(Map("uri" -> aggregationURIWrite))
   	res.saveToMongoDB(writeConfig)
   }
   
