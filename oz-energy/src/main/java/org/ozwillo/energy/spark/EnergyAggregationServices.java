@@ -22,7 +22,7 @@ public class EnergyAggregationServices {
 	private String mavenRepository;
 	@Value("${spark.home}")
 	private String sparkHome;
-	
+
 	@Value("${datacore.data.mongodb.host}")
 	private String datacoreMongoIP;
 	@Value("${datacore.data.mongodb.database}")
@@ -31,11 +31,19 @@ public class EnergyAggregationServices {
 	private String aggregationMongoIP;
 	@Value("${spring.data.mongodb.database}")
 	private String aggregationMongoId;
+	@Value("${spring.data.mongodb.energyProject}")
+	private String energyProject;
+	@Value("${spring.data.mongodb.energyContractCollection}")
+	private String energyContractCollection;
+	@Value("${spring.data.mongodb.energyConsumptionCollection}")
+	private String energyConsumptionCollection;
+	@Value("${spring.data.mongodb.readPreference}")
+	private String readPreference;
 
 	public EnergyAggregationServices() {
 		super();
 	}
-	
+
 	/**
 	 * Executes the runAggregation method on startup if the -DrunAggregation parameter
 	 * is given to Maven.
@@ -49,7 +57,7 @@ public class EnergyAggregationServices {
 	      this.runAggregation();
 	   }
 	}
-    
+
 	/**
 	 * Runs all the energy consumption aggregations, be it grouped by city or contract
 	 * and time measure.
@@ -76,25 +84,29 @@ public class EnergyAggregationServices {
 				"--datacore-mongo-id", datacoreMongoId,
 				"--aggregation-mongo-IP", aggregationMongoIP,
 				"--aggregation-mongo-id", aggregationMongoId,
+				"--energy-project", energyProject,
+				"--energy-contract-collection", energyContractCollection,
+				"--energy-consumption-collection", energyConsumptionCollection,
+				"--read-preference", readPreference,
 				"--aggregation-type", "all",
 				"--all-cities");
 
 		System.out.println("Command args are : " + appArgs.toString());
-		
+
 		SparkLauncher spark = new SparkLauncher(env)
 				//.addSparkArg("--driver-java-options", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=7500")
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations");
-			    
+
 		Iterator<String> argsIterator = appArgs.iterator();
 		while (argsIterator.hasNext()) {
 			spark.addAppArgs(argsIterator.next());
-		}		
-		
+		}
+
 		Process sparkProcess = spark.launch();
-		
+
 		System.out.println("Waiting for aggregation of all data to finish...");
 		int exitCode = sparkProcess.waitFor();
 		System.out.println(IOUtils.toString(sparkProcess.getErrorStream()));
@@ -118,26 +130,30 @@ public class EnergyAggregationServices {
 				"--datacore-mongo-id", datacoreMongoId,
 				"--aggregation-mongo-IP", aggregationMongoIP,
 				"--aggregation-mongo-id", aggregationMongoId,
+				"--energy-project", energyProject,
+				"--energy-contract-collection", energyContractCollection,
+				"--energy-consumption-collection", energyConsumptionCollection,
+				"--read-preference", readPreference,
 				"--aggregation-type", "avg",
 				"--groupBy-time", timeMeasure,
 				"--groupBy-otherDimension", "city",
 				"--city", city);
 
 		System.out.println("Command args are : " + appArgs.toString());
-		
+
 		SparkLauncher spark = new SparkLauncher(env)
 			    .setSparkHome(sparkHome)
 			    .setAppResource(mavenRepository +
 			    		"/oz-energy-aggregations/oz-energy-aggregations_2.10/1.0/oz-energy-aggregations_2.10-1.0-assembly.jar")
 			    .setMainClass("Aggregations");
-			    
+
 		Iterator<String> argsIterator = appArgs.iterator();
 		while (argsIterator.hasNext()) {
 			spark.addAppArgs(argsIterator.next());
 		}
 
 		Process sparkProcess = spark.launch();
-		
+
 		System.out.println("Waiting for city aggregation to finish...");
 		int exitCode = sparkProcess.waitFor();
 		System.out.println(IOUtils.toString(sparkProcess.getErrorStream()));

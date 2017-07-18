@@ -20,10 +20,21 @@ object Aggregations extends Serializable with AvgByDayAndContract with AvgByCity
 with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContract {
 	val usage = """
       Usage is :
-        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type all [--all-cities]
-        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension contract
-        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension city --city Lyon
-        Aggregations --datacore-mongo-IP ozwillo-mongo-1,ozwillo-mongo-3  --datacore-mongo-id datacore --aggregation-mongo-IP 127.0.0.1 --aggregation-mongo-id datacore1 --aggregation-type sum --groupBy-time day/month/year --groupBy-otherDimension contract
+	  	You must always replace the <mandatory-parameters> mention like this:
+
+        <mandatory-parameters> : 	--datacore-mongo-IP <value>
+									--datacore-mongo-id <value>
+									--aggregation-mongo-IP <value>
+									--aggregation-mongo-id <value>
+									--energy-project <value>
+									--energy-contract-collection <value>
+									--energy-consumption-collection <value>
+									--read-preference <value>
+
+		Aggregations <mandatory-parameters> --aggregation-type all [--all-cities]
+        Aggregations <mandatory-parameters> --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension contract
+        Aggregations <mandatory-parameters> --aggregation-type avg --groupBy-time day/month/year --groupBy-otherDimension city --city Lyon
+        Aggregations <mandatory-parameters> --aggregation-type sum --groupBy-time day/month/year --groupBy-otherDimension contract
     """
 
 	def main(args: Array[String]) {
@@ -73,6 +84,14 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
                                nextOption(map ++ Map('aggregationMongoIP -> value), tail)
         case "--aggregation-mongo-id" :: value :: tail =>
                                nextOption(map ++ Map('aggregationMongoId -> value), tail)
+		case "--energy-project" :: value :: tail =>
+		                      nextOption(map ++ Map('energyProject -> value), tail)
+		case "--energy-contract-collection" :: value :: tail =>
+		                      nextOption(map ++ Map('energyContractCollection -> value), tail)
+		case "--energy-consumption-collection" :: value :: tail =>
+		                      nextOption(map ++ Map('energyConsumptionCollection -> value), tail)
+		case "--read-preference" :: value :: tail =>
+		                      nextOption(map ++ Map('readPreference -> value), tail)
         case option :: tail => rootLogger.error("Unknown option " + option)
                                exit(1)
       }
@@ -103,6 +122,8 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		  // If no mention of datacore and aggregation dbs, or if no aggregation type -> Error
 		  if (!(options.contains('datacoreMongoIP) && options.contains('datacoreMongoId)
 		      && options.contains('aggregationMongoIP) && options.contains('aggregationMongoId)
+			  && options.contains('energyProject) && options.contains('energyContractCollection)
+			  && options.contains('energyConsumptionCollection) && options.contains('readPreference)
 		      && options.contains('aggregationType))) {
 		    rootLogger.error("You forgot to specify either the datacore mongo IP/Id, the aggregation mongo IP/Id or the aggregation type.");
 		    badArgs()
@@ -171,12 +192,10 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
     // ----------- BEGIN -----------
 		// Spark config
     // -----------------------------
-		val energyProject: String = "energy_0";
-		val energyContractCollection: String = "enercontr:EnergyConsumptionContract_0";
-		val energyConsumptionCollection: String = "enercons:EnergyConsumption_0";
-		val mongoParameters: String = "readPreference=secondary";
+		val readPreference: String = options('readPreference);
+		val mongoParameters: String = "readPreference=" + readPreference;
 
- 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + "." + energyProject + "." + energyConsumptionCollection + "?" + mongoParameters
+ 		val inputUri: String = "mongodb://" + options('datacoreMongoIP) + "/" + options('datacoreMongoId) + "." + options('energyProject) + "." + options('energyConsumptionCollection) + "?" + mongoParameters
 		val outputUri: String = "mongodb://"+ options('aggregationMongoIP) + "/" + options('aggregationMongoId) + ".avgDayAndContract"
 
 		val conf = new SparkConf()
@@ -188,10 +207,10 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		  .set("datacoreMongoId", options('datacoreMongoId))
 		  .set("aggregationMongoIP", options('aggregationMongoIP))
 		  .set("aggregationMongoId", options('aggregationMongoId))
-		  .set("energyProject", energyProject)
-		  .set("energyContractCollection", energyContractCollection)
-		  .set("energyConsumptionCollection", energyConsumptionCollection)
-		  .set("mongoParameters", mongoParameters)
+		  .set("energyProject", options('energyProject))
+		  .set("energyContractCollection", options('energyContractCollection))
+		  .set("energyConsumptionCollection", options('energyConsumptionCollection))
+		  .set("mongoParameters", options('mongoParameters))
 		val sc = new SparkContext(conf)
     // ------------ END ------------
 		// Spark config
