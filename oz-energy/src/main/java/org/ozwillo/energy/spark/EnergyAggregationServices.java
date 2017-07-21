@@ -23,21 +23,21 @@ public class EnergyAggregationServices {
 	@Value("${spark.home}")
 	private String sparkHome;
 
-	@Value("${datacore.data.mongodb.host}")
-	private String datacoreMongoIP;
-	@Value("${datacore.data.mongodb.database}")
-	private String datacoreMongoId;
 	@Value("${spring.data.mongodb.host}")
 	private String aggregationMongoIP;
 	@Value("${spring.data.mongodb.database}")
 	private String aggregationMongoId;
-	@Value("${spring.data.mongodb.energyProject}")
+	@Value("${datacore.data.mongodb.host}")
+	private String datacoreMongoIP;
+	@Value("${datacore.data.mongodb.database}")
+	private String datacoreMongoId;
+	@Value("${datacore.data.mongodb.energyProject}")
 	private String energyProject;
-	@Value("${spring.data.mongodb.energyContractCollection}")
+	@Value("${datacore.data.mongodb.energyContractCollection}")
 	private String energyContractCollection;
-	@Value("${spring.data.mongodb.energyConsumptionCollection}")
+	@Value("${datacore.data.mongodb.energyConsumptionCollection}")
 	private String energyConsumptionCollection;
-	@Value("${spring.data.mongodb.readPreference}")
+	@Value("${datacore.data.mongodb.readPreference}")
 	private String readPreference;
 
 	public EnergyAggregationServices() {

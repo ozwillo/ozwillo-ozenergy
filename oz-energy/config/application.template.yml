@@ -1,0 +1,69 @@
+spring:
+  data: # Location of Aggregation database
+    mongodb:
+      database: aggregdb
+      host: localhost
+    rest:
+      base-path: /api
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+
+application:
+  url: http://localhost:8080
+  security:
+    fetchUserInfo: true
+    noauthdevmode: true
+  devmode: true
+
+kernel:
+  base_uri: https://accounts.ozwillo-preprod.eu
+  alt_uri: ${kernel.base_uri}
+  auth:
+    issuer: ${kernel.base_uri}/
+    auth_endpoint: ${kernel.alt_uri}/a/auth
+    token_endpoint: ${kernel.base_uri}/a/token
+    keys_endpoint: ${kernel.base_uri}/a/keys
+    userinfo_endpoint: ${kernel.base_uri}/a/userinfo
+    profile_endpoint: ${kernel.base_uri}/d/user
+    password_change_endpoint: ${kernel.alt_uri}/a/password
+    revoke_endpoint: ${kernel.base_uri}/a/revoke
+    logout_endpoint: ${kernel.alt_uri}/a/logout
+    callback_uri: ${application.url}/callback
+    home_uri: ${application.url}/my
+  user_directory_endpoint: ${kernel.base_uri}/d
+  event_bus_endpoint: ${kernel.base_uri}/e
+  notifications_endpoint: ${kernel.base_uri}/n
+  client_id: oz-energy
+  client_secret: changeit
+  # NB. once Datacore cache is in place, move datacore scope to its dedicated system user
+  scopes_to_require: openid profile email address phone datacore
+  maxUserMembershipsPerPage: 20
+
+datacore:
+  data: # Location of Datacore database
+    mongodb:
+      database: datacore
+      host: $$attributes.occi.ld.node.mongoHosts$$
+      energyProject: $$attributes.occi.ld.node.mainProject$$
+      energyContractCollection: enercontr:EnergyConsumptionContract_0
+      energyConsumptionCollection: enercons:EnergyConsumption_0
+      readPreference: $$attributes.occi.ld.node.analyticsReadPreference$$
+
+  url: http://ozwillo-datacore-1:8088
+  #url: http://localhost:8080
+  #url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
+  #url: https://plnm-dev-dc             # dev, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert :
+  # go to https://data.ozwillo-dev.eu, right click on lock, export certificate to plnm-dev-dc.cer,
+  # then import it and check :
+  # sudo keytool -import -alias plnm-dev-dc -keystore /usr/lib/jvm/jdk1.8.xx/jre/lib/security/cacerts -file plnm-dev-dc.cer
+  # keytool -list -v -keystore /usr/lib/jvm/jdk1.8.xx/jre/lib/security/cacerts
+  #url: https://data.ozwillo-dev.eu    # dev, doesn't work with current gen'd cert
+#  systemAdminUser:
+#    refreshToken: changeit
+#    nonce: changeit      #Set it when getting the refreshToken
+#
+
+spark:
+  spark.home: ${SPARK_HOME}
+  #spark.home: ${HOME}/installations/spark-1.6.1-bin-hadoop2.6
