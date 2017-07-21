@@ -210,7 +210,7 @@ with SumByDayAndContract with City with ByMonthAndContract with ByYearAndContrac
 		  .set("energyProject", options('energyProject))
 		  .set("energyContractCollection", options('energyContractCollection))
 		  .set("energyConsumptionCollection", options('energyConsumptionCollection))
-		  .set("mongoParameters", options('mongoParameters))
+		  .set("mongoParameters", mongoParameters)
 		val sc = new SparkContext(conf)
     // ------------ END ------------
 		// Spark config

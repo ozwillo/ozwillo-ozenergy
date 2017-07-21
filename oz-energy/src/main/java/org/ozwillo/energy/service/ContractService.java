@@ -31,11 +31,11 @@ public class ContractService {
    @Value("${application.security.noauthdevmode:false}")
    private boolean noauthdevmode;
 
-   @Value("${datacore.data.mongodb.energy_project}")
+   @Value("${datacore.data.mongodb.energyProject}")
    private String energyProject;
-   @Value("${datacore.data.mongodb.energy_contract_collection}")
+   @Value("${datacore.data.mongodb.energyContractCollection}")
    private String energyContractCollection;
-   @Value("${datacore.data.mongodb.energy_consumption_collection}")
+   @Value("${datacore.data.mongodb.energyConsumptionCollection}")
    private String energyConsumptionCollection;
 
    public String getCurrentUserContract() {
