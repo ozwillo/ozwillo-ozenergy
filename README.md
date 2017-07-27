@@ -4,6 +4,8 @@ OzEnergy - energy consumption monitoring for consumers, providers and territorie
 
 ![Demo](https://github.com/ozwillo/ozwillo-ozenergy/blob/master/app-overview/oz-energy.gif)
 
+> Note:in the following explanations, we suppose that you are using a GNU/Linux debian-derived distribution like Ubuntu on your computer. If you are using Microsoft Windows, please consider running this software in a Virtual Machine.
+
 ## How to use it
 
 ### Through a docker image
@@ -25,7 +27,7 @@ Building requires [**Java 8**](http://www.oracle.com/technetwork/java/javase/dow
 
 Running requires also [**MongoDB 2.6**](https://docs.mongodb.com/v2.6/installation/).
 
-In the end what you need to do is :
+**In the end what you need to do is :**
 
 + A priori, it is not necessary to install Scala separately, since sbt can install the most appropriate version itself. So go on the [**sbt 0.13**](http://www.scala-sbt.org/0.13/docs/Setup.html) link and follow the installation instructions.
 
@@ -76,13 +78,30 @@ mvn clean package
 
 #### Running Oz'Energy
 
+To have the project display any data, you must have at least one running instance of the Datacore with its mongo cluster. For that, you can simply use pre-built docker images (make sure you are not currently using port 30000 and 8088, otherwise, it's not gonna work) :
+
+```bash
+# Download the Docker images
+sudo docker pull smilelab/ozwillo-mongo-master-with-energy-data:1.0
+sudo docker pull smilelab/ozwillo-mongo-slave:1.0
+sudo docker pull smilelab/ozwillo-datacore:1.0
+
+# Run them
+sudo docker run -d -p 30000:27017 --name ozwillo-mongo-1 --hostname ozwillo-mongo-1 smilelab/ozwillo-mongo-master-with-energy-data:1.0
+sudo docker run -d --name ozwillo-mongo-2 --hostname ozwillo-mongo-2 smilelab/ozwillo-mongo-slave:1.0
+sudo docker run -d --name ozwillo-mongo-3 --hostname ozwillo-mongo-3 smilelab/ozwillo-mongo-slave:1.0
+sudo docker run -d -p 8088:8088 --name ozwillo-datacore-1 --hostname ozwillo-datacore-1 smilelab/ozwillo-datacore:1.0
+```
+
+> Note: Since the docker containers know each other through harcoded references to their IPs on the default docker0 network, if you already have other containers running, the actual IPs will change, and you might need to update their /etc/hosts file by hand, to do so, get a bash in the container by doing 'sudo docker exec -it <CONTAINER-NAME> /bin/bash', and edit /etc/hosts by hand.
+
 Run Spring Boot :
 
 ```
 mvn spring-boot:run -DrunAggregation
 ```
-(remove the last parameter to avoid running Spark aggregations on startup in addition to nightly)
+> Note: You can remove the last parameter to avoid running Spark aggregations on startup in addition to nightly.
 
-Open [http://localhost:8080/](http://localhost:8080/) with your favorite browser.
+Open [http://localhost:8080/](http://localhost:8080/) with your favorite browser and you're set !
 
-If devmode has been kept to true, various sample data will be displayed for users if they don't have their own energy consumption contract defined in the Datacore yet.
+If devmode has been kept to true, default sample data will be displayed for users if they don't have their own energy consumption contract defined in the Datacore yet.

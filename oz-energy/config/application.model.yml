@@ -50,8 +50,8 @@ datacore:
       energyConsumptionCollection: enercons:EnergyConsumption_0
       readPreference: secondary
 
-  #url: http://localhost:8080
-  url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
+  url: http://localhost:8088
+  # url: https://data.ozwillo-preprod.eu # preprod, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert.
   #url: https://plnm-dev-dc             # dev, requires (MUST) set the IP in /etc/hosts, and installing gen'd cert :
   # go to https://data.ozwillo-dev.eu, right click on lock, export certificate to plnm-dev-dc.cer,
   # then import it and check :
