@@ -8,6 +8,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.collection.JavaConverters._ // To convert some unsupported types (e.g. Lists) from Scala into native types Java
 import org.bson.Document
 
+import com.mongodb.MongoClient;
+
 import java.util.Date
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -22,9 +24,9 @@ trait AvgByDayAndContract {
    */
   def avgByDayAndContract(sc: SparkContext) = {
     
-    //To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgDayAndContract").drop()})
-	  
+    val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("avgDayAndContract").drop()
+    
 	  //For compatibility with MongoDB 2.6, don't use MongoDefaultPartitioner nor MongoSamplePartitioner
   	val readConfig = ReadConfig(Map("partitioner" -> "MongoPaginateBySizePartitioner"), Some(ReadConfig(sc)))
   	

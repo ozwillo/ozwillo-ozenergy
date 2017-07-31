@@ -10,6 +10,8 @@ import org.bson.Document
 
 import java.util.Date
 
+import com.mongodb.MongoClient;
+
 trait ByYearAndContract extends Util with ByMonthAndContract {
   
   /** Sums the consumption's data from a rdd
@@ -59,7 +61,8 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
 	    .append("date", t._1._2).append("globalKW", t._2))
 
 	  //To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgYearAndContract").drop()})
+ 	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("avgYearAndContract").drop()
 	  //Saves the collection
 	  val aggregationURIWrite: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".avgYearAndContract";
 	  
@@ -105,7 +108,8 @@ trait ByYearAndContract extends Util with ByMonthAndContract {
 	    .append("date", t._1._2).append("globalKW", t._2._4))
 	  
 	  //To have an empty output collection
-  	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumYearAndContract").drop()})
+ 	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("sumYearAndContract").drop()
   	//Saves the collection
 	  val aggregationURIWrite: String = "mongodb://" + aggregationMongoIP + "/" + aggregationMongoId + ".sumYearAndContract";
   	

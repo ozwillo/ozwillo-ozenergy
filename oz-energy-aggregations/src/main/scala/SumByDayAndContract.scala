@@ -13,6 +13,8 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.LocalDate
 
+import com.mongodb.MongoClient;
+
 trait SumByDayAndContract extends Util with AvgByHourAndContract {
   
   /** Determines and saves the total consumption per day and customer
@@ -27,7 +29,8 @@ trait SumByDayAndContract extends Util with AvgByHourAndContract {
   	
     val writeConfig = WriteConfig(Map("uri" -> aggregationURI))
     //To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumDayAndContract").drop()})
+ 	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("sumDayAndContract").drop()
 	
     val resAvg = avgByHourAndContract(sc)
     val rddDay = resAvg.map(doc => (doc.getString("contract"), 

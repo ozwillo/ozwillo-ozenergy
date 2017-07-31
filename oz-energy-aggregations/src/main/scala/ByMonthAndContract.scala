@@ -10,6 +10,8 @@ import org.bson.Document
 
 import java.util.Date
 
+import com.mongodb.MongoClient;
+
 trait ByMonthAndContract extends Util with SumByDayAndContract {
   
   /** Sums the consumption's data from the collection "sumDayAndContract"
@@ -61,7 +63,8 @@ trait ByMonthAndContract extends Util with SumByDayAndContract {
   	                                 .append("globalKW", t._2))
   
   	//To have an empty output collection
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("avgMonthAndContract").drop()})
+ 	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("avgMonthAndContract").drop()
   	
 	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
 	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");
@@ -100,7 +103,8 @@ trait ByMonthAndContract extends Util with SumByDayAndContract {
       .append("date", t._1._2).append("globalKW", t._2._4))
   	
   	//To have an empty output collection
-  	MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection("sumMonthAndContract").drop()})
+ 	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection("sumMonthAndContract").drop()
   	
 	  val aggregationMongoIP: String = sc.getConf.get("aggregationMongoIP");
 	  val aggregationMongoId: String = sc.getConf.get("aggregationMongoId");

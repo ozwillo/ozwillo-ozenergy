@@ -10,6 +10,8 @@ import org.bson.Document
 
 import java.util.Date
 
+import com.mongodb.MongoClient;
+
 trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract with ByYearAndContract{
   
   def filterData(sc: SparkContext, city: String, rdd: com.mongodb.spark.rdd.MongoRDD[org.bson.Document])
@@ -90,7 +92,8 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  val res = filterData(sc, city, resSum)
 
 	  //Clear collection before saving
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgDayFor")).drop()})
+	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection(cityCollection(city, "avgDayFor")).drop()
 
 	  //Save
 	  res.saveToMongoDB(writeConfigCity(sc, city, "avgDayFor"))
@@ -129,7 +132,9 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  val res = filterData(sc, city, resSum)
 
 	  //Clear collection before saving
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgMonthFor")).drop()})
+	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection(cityCollection(city, "avgMonthFor")).drop()
+    
 	  //Save
 	  res.saveToMongoDB(writeConfigCity(sc, city, "avgMonthFor"))
   }
@@ -167,7 +172,8 @@ trait AvgByCity extends Util with SumByDayAndContract with ByMonthAndContract wi
 	  val res = filterData(sc, city, resSum)
 
 	  //Clear collection before saving
-	  MongoConnector(sc).withDatabaseDo(WriteConfig(sc), {db => db.getCollection(cityCollection(city, "avgYearFor")).drop()})
+	  val mongoClient: MongoClient = new MongoClient()
+    mongoClient.getDatabase("aggregdb").getCollection(cityCollection(city, "avgYearFor")).drop()
 	  //Save
 	  res.saveToMongoDB(writeConfigCity(sc, city, "avgYearFor"))
   }
