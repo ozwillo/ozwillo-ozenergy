@@ -3,6 +3,7 @@ package org.ozwillo.ozenergy.data;
 import static org.ozwillo.ozenergy.data.EnergyMapperHelper.*;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,13 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oasis.datacore.rest.api.DCResource;
 import org.oasis.datacore.rest.api.DatacoreApi;
+import org.oasis.datacore.rest.api.util.DCURI;
 import org.oasis.datacore.rest.client.DatacoreCachedClient;
-import org.oasis.datacore.server.uri.UriService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
@@ -34,10 +36,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
+///@ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING) // else random since java 7 NOT REQUIRED ANYMORE
 public abstract class DatacoreEnergyImportTestBase {
-	   
+	
+	private static final Logger logger = LoggerFactory.getLogger(CsvResourceBulkImportService.class);
+	
    /** inited in inheriting classes */
    protected DatacoreApi datacoreApi;
 
@@ -80,22 +84,27 @@ public abstract class DatacoreEnergyImportTestBase {
          String countryId = line[12]; // geocofr:idIso
          String cityId = countryId + '/' + line[14] + '/' + line[15]; // geon3fr:idIso  geocifr:name
          String consumerId = hashCodeId(line[4]);
-         DCResource r = DCResource.create(null, "persid:Identity_0")
-               .set("persid:firstName", line[0])
-               .set("persid:lastName", line[1])
-               .set("persid:displayName", line[2])
-               //.set("persid:gender", line[3])
-               .set("persid:email", line[4])
-               .set("persid:id", consumerId)
-               //.set("persid:birthDate", DateTime.parse(line[5])) // joda rather than java 8 date (not supported locally)
-               .set("adrpost:fullAddress", line[6])
-               .set("adrpost:streetAndNumber", line[7])
-               //.set("adrpost:supField", line[8])
-               .set("adrpost:postCode", line[9])
-               //.set("adrpost:POBox", line[10])
-               //.set("adrpost:cedex", line[11])
-               .set("adrpost:postName", UriService.buildUri("geocifr:Commune_0", cityId))
-               .set("adrpost:country", UriService.buildUri("geocofr:Pays_0", countryId));
+         DCResource r = null;
+			try {
+				r = DCResource.create(null, "persid:Identity_0")
+				       .set("persid:firstName", line[0])
+				       .set("persid:lastName", line[1])
+				       .set("persid:displayName", line[2])
+				       //.set("persid:gender", line[3])
+				       .set("persid:email", line[4])
+				       .set("persid:id", consumerId)
+				       //.set("persid:birthDate", DateTime.parse(line[5])) // joda rather than java 8 date (not supported locally)
+				       .set("adrpost:fullAddress", line[6])
+				       .set("adrpost:streetAndNumber", line[7])
+				       //.set("adrpost:supField", line[8])
+				       .set("adrpost:postCode", line[9])
+				       //.set("adrpost:POBox", line[10])
+				       //.set("adrpost:cedex", line[11])
+				       .set("adrpost:postName", (new DCURI(containerUrl, "geocifr:Commune_0", cityId)).toURI().toString())
+				       .set("adrpost:country", (new DCURI(containerUrl, "geocofr:Pays_0", countryId)).toURI().toString());
+			} catch (URISyntaxException e) {
+				logger.error("Couldn't build postName/country URI" + e);
+			}
          // computed props : NOO in spreadsheet macro
          /*r.set("persid:displayName", "" + r.get("persid:firstName") + ' ' + r.get("persid:lastName"));
          r.set("persid:fullAddress", "" + r.get("persid:firstName") + ' ' + r.get("persid:lastName"));*/
@@ -122,11 +131,16 @@ public abstract class DatacoreEnergyImportTestBase {
          // OR rather generating it from energy_consumers.csv :
          ///String providerId = defaultProviderId;
          //String consumerId = hashCodeId(line[4]);
-         DCResource cr = DCResource.create(null, "enercontr:EnergyConsumptionContract_0")
-               .set("enercontr:provider", UriService.buildUri("orgfr:Organisation_0", providerId))
-               .set("enercontr:consumer", UriService.buildUri("persid:Identity_0", consumerId))
-               .set("odisp:displayName", line[3])
-               .set("enercontr:customerKey", customerKey);
+         DCResource cr = null;
+		try {
+			cr = DCResource.create(null, "enercontr:EnergyConsumptionContract_0")
+			       .set("enercontr:provider", (new DCURI(containerUrl, "orgfr:Organisation_0", providerId)).toURI().toString())
+			       .set("enercontr:consumer", (new DCURI(containerUrl, "persid:Identity_0", consumerId)).toURI().toString())
+			       .set("odisp:displayName", line[3])
+			       .set("enercontr:customerKey", customerKey);
+		} catch (URISyntaxException e) {
+			logger.error("Couldn't build provider/consumer URI" + e);
+		}
          cr.setUriFromId(containerUrl, contractId);
 
          return new DCResource[] { cr };
@@ -145,10 +159,15 @@ public abstract class DatacoreEnergyImportTestBase {
             customerKeysWithoutContract.add(customerKey);
             return null;
          }
-         DCResource r = DCResource.create(null, "enercons:EnergyConsumption_0")
-               .set("enercons:contract", UriService.buildUri("enercontr:EnergyConsumptionContract_0", contractId))
-               .set("enercons:date", DateTime.parse(line[1])) // joda rather than java 8 date (not supported locally)
-               .set("enercons:globalKWH", parseNumber(line[7]));
+         DCResource r = null;
+		try {
+			r = DCResource.create(null, "enercons:EnergyConsumption_0")
+			       .set("enercons:contract", (new DCURI(containerUrl, "enercontr:EnergyConsumptionContract_0", contractId)).toURI().toString())
+			       .set("enercons:date", DateTime.parse(line[1])) // joda rather than java 8 date (not supported locally)
+			       .set("enercons:globalKWH", parseNumber(line[7]));
+		} catch (URISyntaxException e) {
+			logger.error("Couldn't build contract URI" + e);
+		}
 
          r.setUriFromId(containerUrl, contractId + '/' + r.get("enercons:date"));
          return new DCResource[] { r };
