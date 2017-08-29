@@ -2,10 +2,6 @@ package org.ozwillo.ozenergy.data;
 
 import static org.ozwillo.ozenergy.data.EnergyMapperHelper.*;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,35 +9,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oasis.datacore.common.context.SimpleRequestContextProvider;
-import org.oasis.datacore.core.entity.query.ldp.LdpEntityQueryServiceImpl;
-import org.oasis.datacore.core.meta.DataModelServiceImpl;
-import org.oasis.datacore.core.meta.pov.DCProject;
-import org.oasis.datacore.core.security.mock.LocalAuthenticationService;
 import org.oasis.datacore.rest.api.DCResource;
 import org.oasis.datacore.rest.api.DatacoreApi;
 import org.oasis.datacore.rest.client.DatacoreCachedClient;
-import org.oasis.datacore.rest.client.cxf.mock.AuthenticationHelper;
-import org.oasis.datacore.rest.server.DatacoreApiImpl;
-import org.oasis.datacore.rest.server.resource.ResourceService;
 import org.oasis.datacore.server.uri.UriService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.common.collect.ImmutableMap;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 
 /**
@@ -56,24 +36,14 @@ import au.com.bytecode.opencsv.CSVReader;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING) // else random since java 7 NOT REQUIRED ANYMORE
-public class DatacoreEnergyImportTest {
+public abstract class DatacoreEnergyImportTestBase {
+	   
+   /** inited in inheriting classes */
+   protected DatacoreApi datacoreApi;
 
    @Autowired
    @Qualifier("datacoreApiCachedJsonClient")
-   private /*DatacoreApi*/DatacoreCachedClient datacoreApiClient;
-   @Autowired
-   private ResourceService resourceService;
-
-   /** to init models */
-   @Autowired
-   private /*static */DataModelServiceImpl modelServiceImpl;
-   ///@Autowired
-   ///private CityCountrySample cityCountrySample;
-
-   /** to cleanup db
-    * TODO LATER rather in service */
-   @Autowired
-   private /*static */MongoOperations mgo;
+   protected DatacoreCachedClient datacoreApiClient;
 
    /** to clean cache for tests */
    @Autowired
@@ -88,37 +58,14 @@ public class DatacoreEnergyImportTest {
    private String containerUrlString;
    @Value("#{new java.net.URI('${datacoreApiClient.containerUrl}')}")
    //@Value("#{uriService.getContainerUrl()}")
-   private URI containerUrl;
-
-   /** for testing purpose */
-   @Autowired
-   @Qualifier("datacoreApiImpl")
-   private DatacoreApiImpl datacoreApiImpl;
-   @Autowired
-   private LocalAuthenticationService authenticationService;
-   /** for testing purpose */
-   @Autowired
-   private LdpEntityQueryServiceImpl ldpEntityQueryServiceImpl;
-
-
+   protected URI containerUrl;
 
    @Test
    public void importEnergySampleData() throws Exception {
       // ASSUMING there are already resources (and their models) :
       // geo_1 (with addrpostci:name), org_1 (with providers)
       // as well as models of : org_1.persid:, energy_0.ener*
-
-      boolean serverRatherThanClient = false;
-
-      DatacoreApi datacoreApi;
-      if (serverRatherThanClient) {
-         authenticationService.loginAs("admin"); // works only on server-side (on client side, also requires Bearer/Basic credentials)
-         datacoreApi = datacoreApiImpl;
-
-      } else {
-         AuthenticationHelper.loginBasicAsAdmin(); // works only on client side in devmode
-         datacoreApi = datacoreApiClient;
-      }
+	   
       CsvResourceBulkImportService csvImportService = new CsvResourceBulkImportService();
       csvImportService.setDatacoreApi(datacoreApi);
 
@@ -210,75 +157,6 @@ public class DatacoreEnergyImportTest {
       System.out.println("Not imported " + customerKeysWithoutContract.size()
          + " consumptions having no contract with the following customerKeys: "
          + new HashSet<String>(customerKeysWithoutContract));
-      System.out.println("serverRatherThanClient=" + serverRatherThanClient);
-   }
-
-
-   ///@Test
-   public void testDraft() throws Exception {
-      // set sample project :
-      SimpleRequestContextProvider.setSimpleRequestContext(new ImmutableMap.Builder<String, Object>()
-            .put(DatacoreApi.PROJECT_HEADER, DCProject.OASIS_SANBOX).build());
-
-      authenticationService.loginAs("guest");
-      int maxLineNb = 1000000; // 5
-
-      String csvResourcePath = "/home/mdutoo/dev/oasis/workspace/ozwillo-ozenergy/energy-ok-import-datacore.csv";
-      //InputStream csvIn = getClass().getClassLoader().getResourceAsStream(csvResourcePath );
-      InputStream csvIn = new FileInputStream(csvResourcePath);
-      /*if (csvIn == null) {
-         throw new RuntimeException("Unable to find in classpath CSV resource " + csvResourcePath);
-      }*/
-      CSVReader csvReader = null;
-      try  {
-         csvReader = new CSVReader(new InputStreamReader(csvIn), ',');
-         String [] line;
-         csvReader.readNext(); // skip header
-         for (int ln = 0; (line = csvReader.readNext()) != null && ln < maxLineNb; ln++) {
-            try {
-            // filling company's provided props :
-            DCResource r = DCResource.create(null, "mod:Energy_0")
-                  .set("mod_Energy:CUSTOMER_KEY", Integer.parseInt(line[0], 10))
-                  .set("mod_Energy:date_mesure", line[1])
-                  .set("mod_Energy:General_Supply_KWH", Double.parseDouble(line[7]));
-
-            // once props are complete, build URI out of them and schedule post :
-            r.setUriFromId(containerUrl, r.get("mod_Energy:CUSTOMER_KEY").toString()
-                  + '/' + r.get("mod_Energy:date_mesure"));
-            try {
-               datacoreApiImpl.getData(r.getModelType(), r.getId(), null);
-            } catch (NotFoundException rnfex) {
-               //datacoreApiClient.postDataInType(r);
-               datacoreApiImpl.postDataInType(r, r.getModelType());
-            } // else don't repost it if already there (empty db for that)
-            } catch (WebApplicationException nfex) {
-               if (nfex.getResponse().getStatus() == 201) {
-                  // normal
-               } else {
-                  throw nfex;
-               }
-            } catch (NumberFormatException nfex) {
-               throw new RuntimeException("NumberFormatException " + line[7]);
-            }
-         }
-
-      } catch (WebApplicationException waex) {
-         throw new RuntimeException("HTTP " + waex.getResponse().getStatus()
-               + " web app error reading classpath CSV resource " + csvResourcePath
-               + " :\n" + waex.getResponse().getStringHeaders() + "\n"
-               + ((waex.getResponse().getEntity() != null) ? waex.getResponse().getEntity() + "\n\n" : ""), waex);
-
-      } catch (Exception ex) {
-         throw new RuntimeException("Error reading classpath CSV resource " + csvResourcePath, ex);
-
-      } finally {
-         try {
-            csvReader.close();
-         } catch (IOException e) {
-           // TODO log
-         }
-      }
-
    }
 
 
