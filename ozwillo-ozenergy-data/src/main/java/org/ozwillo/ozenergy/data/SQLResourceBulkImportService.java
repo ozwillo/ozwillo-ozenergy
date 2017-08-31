@@ -82,7 +82,7 @@ public class SQLResourceBulkImportService {
          int ln;
          List<DCResource> resourcesToPost = new ArrayList<DCResource>(resourceBatchSize);
          
-         for (ln = 0; ln <= result.size() && ln < maxLineNb; ln++) {
+         for (ln = 0; ln < result.size() && ln < maxLineNb; ln++) {
         	 
         	line = result.get(ln);
         	 
