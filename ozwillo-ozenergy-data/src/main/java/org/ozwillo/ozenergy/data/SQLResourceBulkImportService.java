@@ -74,15 +74,22 @@ public class SQLResourceBulkImportService {
       int resourceBatchSize = 1000;
       
       ResultSet rs = requestDB(dbURL, dbUsername, dbPassword);
-
+      
+      logger.info("Ok at line 78");
+      
       try  {         
          String[] line;
 
          int resourceNb = 0;
          int ln;
          List<DCResource> resourcesToPost = new ArrayList<DCResource>(150);
+         
+         logger.info("Ok at line 87");
+         
          for (ln = 0; rs.next() && ln < maxLineNb; ln++) {
             
+        	logger.info("Ok at line 91");
+        	 
         	line = new String[8];
 	        line[0] = rs.getString("email");
 	        line[1] = rs.getString("project_id");

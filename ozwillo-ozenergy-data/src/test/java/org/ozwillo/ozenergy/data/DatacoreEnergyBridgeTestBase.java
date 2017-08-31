@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -44,7 +43,7 @@ public abstract class DatacoreEnergyBridgeTestBase {
 	private static final String dbUsername = "test";
 	private static final String dbPassword = "test";
 	
-	private static final Logger logger = LoggerFactory.getLogger(CsvResourceBulkImportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(DatacoreEnergyBridgeTestBase.class);
 	
    /** inited in inheriting classes */
    protected DatacoreApi datacoreApi;
