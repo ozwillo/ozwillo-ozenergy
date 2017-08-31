@@ -73,7 +73,7 @@ public class SQLResourceBulkImportService {
       long startTime = System.currentTimeMillis();
       int resourceBatchSize = 1000;
       
-      ResultSet rs = requestDB(dbURL, dbUsername, dbPassword);
+      List<String[]> result = requestDB(dbURL, dbUsername, dbPassword);
       
       logger.info("Ok at line 78");
       
@@ -86,19 +86,11 @@ public class SQLResourceBulkImportService {
          
          logger.info("Ok at line 87");
          
-         for (ln = 0; rs.next() && ln < maxLineNb; ln++) {
+         for (ln = 0; ln <= result.size() && ln < maxLineNb; ln++) {
             
         	logger.info("Ok at line 91");
         	 
-        	line = new String[8];
-	        line[0] = rs.getString("email");
-	        line[1] = rs.getString("project_id");
-	        line[2] = rs.getString("device_id");
-	        line[3] = rs.getString("pin");
-	        line[4] = rs.getString("pintype");
-	        line[5] = rs.getString("ts");
-	        line[6] = rs.getString("stringvalue");
-	        line[7] = rs.getString("doublevalue");
+        	line = result.get(ln);
 	        
 	        logger.info("Line nb " + ln + ": " + line[0] + " ; " + 
 	        		line[1] + " ; " + 
@@ -171,14 +163,7 @@ public class SQLResourceBulkImportService {
                + " web app error reading DB table" + dbURL
                + " :\n" + r.getStringHeaders() + "\n" + errMsg + "\n\n", waex);
 
-      } finally {
-         try {
-        	 rs.close();
-         } catch (SQLException e) {
-           logger.error(e.getClass().getName()+": "+ e.getMessage());
-         }
       }
-
    }
 
    public DatacoreApi getDatacoreApi() {
@@ -188,10 +173,10 @@ public class SQLResourceBulkImportService {
       this.datacoreApi = datacoreApi;
    }
    
-   private ResultSet requestDB(String dbURL, String dbUsername, String dbPassword) {
+   private List<String[]> requestDB(String dbURL, String dbUsername, String dbPassword) {
       Connection c = null;
       Statement stmt = null;
-      ResultSet rs = null;
+      List<String[]> queryResult = new ArrayList<String[]>();;
       try {
          Class.forName("org.postgresql.Driver");
          c = DriverManager
@@ -200,8 +185,21 @@ public class SQLResourceBulkImportService {
          System.out.println("Opened database successfully");
          
          stmt = c.createStatement();
-         rs = stmt.executeQuery( "SELECT * FROM reporting_raw_data;" );
-         
+         ResultSet rs = stmt.executeQuery( "SELECT * FROM reporting_raw_data;" );
+         String[] line;
+         while ( rs.next() ) {
+         	line = new String[8];
+ 	        line[0] = rs.getString("email");
+ 	        line[1] = rs.getString("project_id");
+ 	        line[2] = rs.getString("device_id");
+ 	        line[3] = rs.getString("pin");
+ 	        line[4] = rs.getString("pintype");
+ 	        line[5] = rs.getString("ts");
+ 	        line[6] = rs.getString("stringvalue");
+ 	        line[7] = rs.getString("doublevalue");
+ 	        queryResult.add(line);
+          }
+          rs.close();
          stmt.close();
          c.close();
       } catch ( Exception e ) {
@@ -210,7 +208,7 @@ public class SQLResourceBulkImportService {
       }
       logger.info("Operation done successfully");
       
-      return rs;
+      return queryResult;
    }
 
 }
