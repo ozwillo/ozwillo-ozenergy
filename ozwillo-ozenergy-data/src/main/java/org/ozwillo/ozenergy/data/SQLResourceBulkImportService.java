@@ -84,11 +84,7 @@ public class SQLResourceBulkImportService {
          int ln;
          List<DCResource> resourcesToPost = new ArrayList<DCResource>(150);
          
-         logger.info("Ok at line 87");
-         
          for (ln = 0; ln <= result.size() && ln < maxLineNb; ln++) {
-            
-        	logger.info("Ok at line 91");
         	 
         	line = result.get(ln);
 	        
@@ -102,6 +98,9 @@ public class SQLResourceBulkImportService {
 	        		line[7] + " ; ");
         	 
             DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);
+
+            logger.info("Ok at line 102");
+            
             if (mappedResources == null || mappedResources.length == 0) {
                continue;
             }
