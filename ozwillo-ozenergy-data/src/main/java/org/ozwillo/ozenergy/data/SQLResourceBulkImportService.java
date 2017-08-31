@@ -92,8 +92,6 @@ public class SQLResourceBulkImportService {
                continue;
             }
             
-            logger.info("Ok at line 106 " + mappedResources[0]);
-            
             resourcesToPost.addAll(Arrays.asList(mappedResources));
 
             //if ((ln + 1) % lineBatchSize == 0) {
@@ -142,7 +140,7 @@ public class SQLResourceBulkImportService {
          long endTime = System.currentTimeMillis();
          String successMsg = "Took " + (endTime - startTime) + " ms to upload "
                + resourceNb + " resources out of " + ln + " lines from DB table " + dbURL;
-         logger.error(successMsg);
+         logger.info(successMsg);
          return successMsg;
 
       } catch (WebApplicationException waex) {
@@ -171,7 +169,7 @@ public class SQLResourceBulkImportService {
          c = DriverManager
     		 .getConnection(dbURL, dbUsername, dbPassword);
          c.setAutoCommit(false);
-         System.out.println("Opened database successfully");
+         logger.info("Opened database successfully");
          
          stmt = c.createStatement();
          ResultSet rs = stmt.executeQuery( "SELECT * FROM reporting_raw_data WHERE stringValue LIKE '%CUSTOMER_KEY%' AND stringValue LIKE '%CONSUMPTION%';" );

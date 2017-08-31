@@ -134,7 +134,7 @@ public abstract class DatacoreEnergyBridgeTestBase {
          return new DCResource[] { r };
       });
 
-      System.out.println("Not imported " + customerKeysWithoutContract.size()
+      logger.info("Not imported " + customerKeysWithoutContract.size()
          + " consumptions having no contract with the following customerKeys: "
          + new HashSet<String>(customerKeysWithoutContract));
    }
