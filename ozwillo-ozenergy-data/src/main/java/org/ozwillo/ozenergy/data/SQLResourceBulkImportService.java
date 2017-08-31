@@ -174,7 +174,7 @@ public class SQLResourceBulkImportService {
          System.out.println("Opened database successfully");
          
          stmt = c.createStatement();
-         ResultSet rs = stmt.executeQuery( "SELECT * FROM reporting_raw_data;" );
+         ResultSet rs = stmt.executeQuery( "SELECT * FROM reporting_raw_data WHERE stringValue LIKE '%CUSTOMER_KEY%' AND stringValue LIKE '%CONSUMPTION%';" );
          String[] line;
          while ( rs.next() ) {
          	line = new String[8];
@@ -189,6 +189,11 @@ public class SQLResourceBulkImportService {
  	        queryResult.add(line);
           }
           rs.close();
+      
+          String sql = "DELETE FROM reporting_raw_data WHERE stringValue LIKE '%CUSTOMER_KEY%' AND stringValue LIKE '%CONSUMPTION%';";
+          stmt.executeUpdate(sql);
+          c.commit();
+          
          stmt.close();
          c.close();
       } catch ( Exception e ) {
