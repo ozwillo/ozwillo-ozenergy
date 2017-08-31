@@ -82,7 +82,7 @@ public abstract class DatacoreEnergyBridgeTestBase {
 	   DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
       final List<String> customerKeysWithoutContract = new ArrayList<String>();
-      dbBridgeService.bridgeDB(dbURL, dbUsername, dbPassword, 1000000, false,
+      dbBridgeService.bridgeDB(dbURL, dbUsername, dbPassword, 1000000, true,
             null, line -> {
          
          // If DB line doesnt' contain energy consumption data, return null so that it is ignored
