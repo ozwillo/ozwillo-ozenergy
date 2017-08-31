@@ -106,12 +106,14 @@ public abstract class DatacoreEnergyBridgeTestBase {
          // /dc/type/enercontr:EnergyConsumptionContract_0?enercontr:customerKey=8342962
          List<DCResource> foundContracts = datacoreApiClient.findDataInType("enercontr:EnergyConsumptionContract_0", new QueryParameters().add("enercontr:customerKey", customerKey), 0, 1);
 
-         logger.info("OOOK at line 107" + " customerKey " + customerKey + " consumption " + consumption + " foundContracts.get(0).getUri() " + foundContracts.get(0).getUri() );
+         logger.info("OOOK at line 107" + " customerKey " + customerKey + " consumption " + consumption + " foundContracts " + foundContracts + " foundContracts.get(0).getUri() " + foundContracts.get(0).getUri() );
          
          if (foundContracts == null || foundContracts.get(0).getUri() == null) {
              customerKeysWithoutContract.add(customerKey);
              return null;
          }
+         
+         logger.info("OOOK at line 116");
          
          String contractId;
 		try {
