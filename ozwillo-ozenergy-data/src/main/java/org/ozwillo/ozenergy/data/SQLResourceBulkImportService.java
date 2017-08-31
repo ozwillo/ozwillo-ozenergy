@@ -98,12 +98,13 @@ public class SQLResourceBulkImportService {
 	        		line[7] + " ; ");
         	 
             DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);
-
-            logger.info("Ok at line 102");
             
             if (mappedResources == null || mappedResources.length == 0) {
                continue;
             }
+            
+            logger.info("Ok at line 106");
+            
             resourcesToPost.addAll(Arrays.asList(mappedResources));
 
             //if ((ln + 1) % lineBatchSize == 0) {

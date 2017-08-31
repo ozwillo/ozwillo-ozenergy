@@ -87,6 +87,8 @@ public abstract class DatacoreEnergyBridgeTestBase {
          if (!(line[6].contains("CUSTOMER_KEY") && line[6].contains("CONSUMPTION"))) {
         	 return null;
          }
+         
+         logger.info("OOOK at line 91");
         
         Pattern customerKeyPattern = Pattern.compile("CUSTOMER_KEY=(.*?);");
 		Pattern consumptionPattern = Pattern.compile("CONSUMPTION=(.*?);");
@@ -100,6 +102,8 @@ public abstract class DatacoreEnergyBridgeTestBase {
 		while (consumptionMatcher.find()) {
 			consumption = consumptionMatcher.group(1);
 		}
+		
+		logger.info("OOOK at line 106" + " customerKey " + customerKey + " consumption " + consumption);
          
          List<DCResource> foundContracts = datacoreApiClient.findDataInType("enercontr:EnergyConsumptionContract_0", new QueryParameters().add("enercontr:customerKey", customerKey), 0, 1);
          
@@ -109,6 +113,9 @@ public abstract class DatacoreEnergyBridgeTestBase {
          }
          
          String contractId = foundContracts.get(0).getId();
+         
+         logger.info("OOOK at line 117" + " contractId " + contractId);
+         
          DCResource r = null;
          
 		try {
