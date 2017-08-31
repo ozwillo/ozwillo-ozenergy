@@ -1,5 +1,6 @@
 package org.ozwillo.ozenergy.data;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.oasis.datacore.rest.api.DCResource;
 import org.oasis.datacore.rest.api.DatacoreApi;
 import org.oasis.datacore.rest.api.util.DCURI;
+import org.oasis.datacore.rest.api.util.UriHelper;
 import org.oasis.datacore.rest.client.DatacoreCachedClient;
 import org.oasis.datacore.rest.client.QueryParameters;
 import org.slf4j.Logger;
@@ -106,12 +108,17 @@ public abstract class DatacoreEnergyBridgeTestBase {
 
          logger.info("OOOK at line 107" + " customerKey " + customerKey + " consumption " + consumption + " foundContracts.get(0).getUri() " + foundContracts.get(0).getUri() );
          
-         if (foundContracts == null || foundContracts.get(0).getId() == null) {
+         if (foundContracts == null || foundContracts.get(0).getUri() == null) {
              customerKeysWithoutContract.add(customerKey);
              return null;
          }
          
-         String contractId = foundContracts.get(0).getId();
+         String contractId;
+		try {
+			contractId = UriHelper.parseUri(foundContracts.get(0).getUri()).getId();
+		} catch (Exception e) {
+			logger.error("Couldn't get ID from URI" + e);
+		}
          
          logger.info("OOOK at line 117" + " contractId " + contractId);
          
