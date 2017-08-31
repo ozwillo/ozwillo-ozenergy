@@ -8,17 +8,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
- * Injects energy data :
- * TODO
+ * Injects energy data from Blynk server PostgreSQL DB.
  *
- * Requires model to have been already imported (ex. using the Playground Import tool)
+ * Requires model to have been already imported (ex. using the Playground Import tool).
+ * Simply extends the DatacoreEnergyBridgeTestBase to add auth appropriate for client-sided
+ * importation.
  *
- * @author mdutoo
+ * @author brenault
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:oasis-datacore-ozenergy-data-client-context.xml" }) // NOT classpath:oasis-datacore-rest-server-test-context.xml
-//@FixMethodOrder(MethodSorters.NAME_ASCENDING) // else random since java 7 NOT REQUIRED ANYMORE
 public class DatacoreEnergyBridgeClientTest extends DatacoreEnergyBridgeTestBase {
 
 

@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableMap;
  * - supports file or classpath resource
  * - auth : login with the right user must be done explicitly using helpers
  *
- * @author mdutoo
+ * @author brenault
  *
  */
 //@Component // instanciated in XML for both client & server datacoreApi
@@ -73,8 +73,10 @@ public class SQLResourceBulkImportService {
       long startTime = System.currentTimeMillis();
       int resourceBatchSize = 1000;
       
+      // Get data from DB
       List<String[]> result = requestDB(dbURL, dbUsername, dbPassword);
-            
+      
+      // Process it and send it to datacore
       try  {         
          String[] line;
 
@@ -160,6 +162,13 @@ public class SQLResourceBulkImportService {
       this.datacoreApi = datacoreApi;
    }
    
+   /**
+    * Get energy consumption data extracted from the Blynk reporting_raw_data table as a list
+    * @param dbURL
+    * @param dbUsername
+    * @param dbPassword
+    * @return all the data extracted from the Blynk reporting_raw_data table.
+    */
    private List<String[]> requestDB(String dbURL, String dbUsername, String dbPassword) {
       Connection c = null;
       Statement stmt = null;
