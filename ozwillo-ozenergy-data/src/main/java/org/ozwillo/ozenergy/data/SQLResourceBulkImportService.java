@@ -92,6 +92,15 @@ public class SQLResourceBulkImportService {
 	        line[5] = rs.getString("ts");
 	        line[6] = rs.getString("stringvalue");
 	        line[7] = rs.getString("doublevalue");
+	        
+	        logger.info("Line nb " + ln + ": " + line[0] + " ; " + 
+	        		line[1] + " ; " + 
+	        		line[2] + " ; " + 
+	        		line[3] + " ; " + 
+	        		line[4] + " ; " + 
+	        		line[5] + " ; " + 
+	        		line[6] + " ; " + 
+	        		line[7] + " ; ");
         	 
             DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);
             if (mappedResources == null || mappedResources.length == 0) {
