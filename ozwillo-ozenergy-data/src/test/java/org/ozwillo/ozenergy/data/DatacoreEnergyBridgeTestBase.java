@@ -115,7 +115,7 @@ public abstract class DatacoreEnergyBridgeTestBase {
          
          logger.info("OOOK at line 116");
          
-         String contractId;
+         String contractId = null;
 		try {
 			contractId = UriHelper.parseUri(foundContracts.get(0).getUri()).getId();
 		} catch (Exception e) {
