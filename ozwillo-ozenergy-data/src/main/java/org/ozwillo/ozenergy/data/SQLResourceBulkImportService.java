@@ -74,9 +74,7 @@ public class SQLResourceBulkImportService {
       int resourceBatchSize = 1000;
       
       List<String[]> result = requestDB(dbURL, dbUsername, dbPassword);
-      
-      logger.info("Ok at line 78");
-      
+            
       try  {         
          String[] line;
 
@@ -87,15 +85,6 @@ public class SQLResourceBulkImportService {
          for (ln = 0; ln <= result.size() && ln < maxLineNb; ln++) {
         	 
         	line = result.get(ln);
-	        
-	        logger.info("Line nb " + ln + ": " + line[0] + " ; " + 
-	        		line[1] + " ; " + 
-	        		line[2] + " ; " + 
-	        		line[3] + " ; " + 
-	        		line[4] + " ; " + 
-	        		line[5] + " ; " + 
-	        		line[6] + " ; " + 
-	        		line[7] + " ; ");
         	 
             DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);
             

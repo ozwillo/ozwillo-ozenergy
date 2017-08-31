@@ -131,8 +131,6 @@ public abstract class DatacoreEnergyBridgeTestBase {
 
          r.setUriFromId(containerUrl, contractId + '/' + r.get("enercons:date"));
          
-         logger.info("OOOK at line 140" + " DCResource " + r);
-         
          return new DCResource[] { r };
       });
 
