@@ -106,14 +106,10 @@ public abstract class DatacoreEnergyBridgeTestBase {
          // /dc/type/enercontr:EnergyConsumptionContract_0?enercontr:customerKey=8342962
          List<DCResource> foundContracts = datacoreApiClient.findDataInType("enercontr:EnergyConsumptionContract_0", new QueryParameters().add("enercontr:customerKey", customerKey), 0, 1);
 
-         logger.info("OOOK at line 107" + " customerKey " + customerKey + " consumption " + consumption + " foundContracts " + foundContracts + " foundContracts.get(0).getUri() " + foundContracts.get(0).getUri() );
-         
          if (foundContracts == null || foundContracts.get(0).getUri() == null) {
              customerKeysWithoutContract.add(customerKey);
              return null;
          }
-         
-         logger.info("OOOK at line 116");
          
          String contractId = null;
 		try {
@@ -121,8 +117,6 @@ public abstract class DatacoreEnergyBridgeTestBase {
 		} catch (Exception e) {
 			logger.error("Couldn't get ID from URI" + e);
 		}
-         
-         logger.info("OOOK at line 117" + " contractId " + contractId);
          
          DCResource r = null;
          
@@ -136,6 +130,9 @@ public abstract class DatacoreEnergyBridgeTestBase {
 		}
 
          r.setUriFromId(containerUrl, contractId + '/' + r.get("enercons:date"));
+         
+         logger.info("OOOK at line 140" + " DCResource " + r);
+         
          return new DCResource[] { r };
       });
 

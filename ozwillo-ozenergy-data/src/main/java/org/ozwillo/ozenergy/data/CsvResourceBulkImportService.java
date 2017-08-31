@@ -93,7 +93,7 @@ public class CsvResourceBulkImportService {
          csvReader.readNext(); // skip header TODO parse & map it
          int resourceNb = 0;
          int ln;
-         List<DCResource> resourcesToPost = new ArrayList<DCResource>(150);
+         List<DCResource> resourcesToPost = new ArrayList<DCResource>(resourceBatchSize);
          for (ln = 0; (line = csvReader.readNext()) != null && ln < maxLineNb; ln++) {
             // schedule post :
             DCResource[] mappedResources = indexedFieldSetResourceMapper.apply(line);

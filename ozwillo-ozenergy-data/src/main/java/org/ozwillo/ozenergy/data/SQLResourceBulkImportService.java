@@ -82,7 +82,7 @@ public class SQLResourceBulkImportService {
 
          int resourceNb = 0;
          int ln;
-         List<DCResource> resourcesToPost = new ArrayList<DCResource>(150);
+         List<DCResource> resourcesToPost = new ArrayList<DCResource>(resourceBatchSize);
          
          for (ln = 0; ln <= result.size() && ln < maxLineNb; ln++) {
         	 
@@ -103,7 +103,7 @@ public class SQLResourceBulkImportService {
                continue;
             }
             
-            logger.info("Ok at line 106");
+            logger.info("Ok at line 106 " + mappedResources[0]);
             
             resourcesToPost.addAll(Arrays.asList(mappedResources));
 
