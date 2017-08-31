@@ -43,8 +43,8 @@ public abstract class DatacoreEnergyBridgeTestBase {
 	private static final String DB_USERNAME = "test";
 	private static final String DB_PASSWORD = "test";
 	
-	// Duration to wait between importations to Datacore
-	private static final int SLEEP_TIME = 5000;
+	// Duration to wait in milliseconds between importations to Datacore
+	private static final int SLEEP_TIME = 300000; // 5 minutes
 	
 	private static final Logger logger = LoggerFactory.getLogger(DatacoreEnergyBridgeTestBase.class);
 	
@@ -75,7 +75,7 @@ public abstract class DatacoreEnergyBridgeTestBase {
 				} catch (Exception e) {
 					logger.error("Importation from DB failed" + e);
 				}
-	            logger.info("Importation from DB was a success : sleeping for ");
+	            logger.info("Importation from DB was a success : sleeping for " + (SLEEP_TIME / 1000) + " seconds.");
 	            Thread.sleep(SLEEP_TIME);
 	        }
 	    } catch (InterruptedException e) {
