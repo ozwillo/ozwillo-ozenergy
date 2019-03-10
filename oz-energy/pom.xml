@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		
-		<jackson.version>2.8.0</jackson.version>
+		<jackson.version>2.9.8</jackson.version>
 		<joda.version>2.9.4</joda.version>
 		
 		<ozwillo.java-spring-integration.version>1.24</ozwillo.java-spring-integration.version>
